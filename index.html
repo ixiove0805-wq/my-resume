@@ -122,13 +122,10 @@
   }
   .hero .role b{color:var(--ink);font-weight:600;}
 
-  .chart-wrap{margin-top:46px;}
-  #regSvg{width:100%;height:auto;display:block;}
-  .fit-label{
-    font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--slate);
-    text-align:right;margin-top:6px;letter-spacing:.02em;
-  }
-  .fit-label .signal{color:var(--signal);font-weight:600;}
+  .galaxy-wrap{margin:50px 0 10px;display:flex;justify-content:center;}
+  #gxSvg{width:min(360px, 70vw);height:auto;display:block;animation:gxspin 70s linear infinite;}
+  @keyframes gxspin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  @media (prefers-reduced-motion: reduce){#gxSvg{animation:none;}}
 
   .hero-ctas{display:flex;gap:14px;margin-top:38px;flex-wrap:wrap;}
   .btn{
@@ -304,24 +301,37 @@
   <div class="wrap hero-inner">
     <div class="availability-chip" data-i18n="hero.chip"><span class="dot"></span>open to internship · aug – dec 2026</div>
     <h1><span data-i18n="hero.name">ZHAO XINYI</span><span class="hanna">— Hanna —</span></h1>
-    <p class="role" data-i18n="hero.role">Computer Science undergraduate specializing in <b>Intelligent Machines</b> — data mining, machine learning and full‑stack engineering, with a habit of turning messy data into decisions.</p>
+    <p class="role" data-i18n="hero.role">Computer Science undergraduate specializing in <b>Intelligent Machines</b> — skilled at rapidly learning and building AI, data and automation solutions through hands‑on practice.</p>
 
-    <div class="chart-wrap">
-      <svg id="regSvg" viewBox="0 0 860 220" preserveAspectRatio="none">
+    <div class="galaxy-wrap">
+      <svg id="gxSvg" viewBox="0 0 400 400">
         <defs>
-          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4" result="blur"></feGaussianBlur>
-            <feMerge>
-              <feMergeNode in="blur"></feMergeNode>
-              <feMergeNode in="SourceGraphic"></feMergeNode>
-            </feMerge>
-          </filter>
+          <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FFF6EC"></stop>
+            <stop offset="35%" stop-color="#FFC79A"></stop>
+            <stop offset="100%" stop-color="rgba(255,157,92,0)"></stop>
+          </radialGradient>
+          <linearGradient id="armGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="rgba(159,193,255,0)"></stop>
+            <stop offset="50%" stop-color="rgba(159,193,255,.55)"></stop>
+            <stop offset="100%" stop-color="rgba(159,193,255,0)"></stop>
+          </linearGradient>
+          <linearGradient id="armGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="rgba(207,180,255,0)"></stop>
+            <stop offset="50%" stop-color="rgba(207,180,255,.45)"></stop>
+            <stop offset="100%" stop-color="rgba(207,180,255,0)"></stop>
+          </linearGradient>
         </defs>
-        <line x1="0" y1="180" x2="860" y2="180" stroke="rgba(255,255,255,.12)" stroke-width="1"></line>
-        <g id="dots"></g>
-        <path id="regLine" d="M10,170 C 220,150 430,90 850,30" fill="none" stroke="#FF9D5C" stroke-width="2.5" stroke-linecap="round" filter="url(#glow)"></path>
+        <g id="galaxyGroup" transform="translate(200,200)">
+          <circle r="150" fill="url(#coreGlow)" opacity="0.18"></circle>
+          <path d="M0,0 C 40,-30 110,-30 150,10 C 175,32 165,70 130,78 C 90,86 40,65 20,30" fill="none" stroke="url(#armGrad1)" stroke-width="10" stroke-linecap="round"></path>
+          <path d="M0,0 C -40,30 -110,30 -150,-10 C -175,-32 -165,-70 -130,-78 C -90,-86 -40,-65 -20,-30" fill="none" stroke="url(#armGrad1)" stroke-width="10" stroke-linecap="round"></path>
+          <path d="M0,0 C 25,-55 90,-75 130,-45 C 155,-26 150,10 115,18" fill="none" stroke="url(#armGrad2)" stroke-width="6" stroke-linecap="round"></path>
+          <path d="M0,0 C -25,55 -90,75 -130,45 C -155,26 -150,-10 -115,-18" fill="none" stroke="url(#armGrad2)" stroke-width="6" stroke-linecap="round"></path>
+          <circle r="14" fill="url(#coreGlow)"></circle>
+          <g id="gxStars"></g>
+        </g>
       </svg>
-      <div class="fit-label" data-i18n="hero.fit">trend fitted from coursework, projects &amp; late nights · <span class="signal">R² = 0.97</span></div>
     </div>
 
     <div class="hero-ctas">
@@ -541,14 +551,13 @@
     "nav.projects": {en:"projects", zh:"项目"},
     "nav.education": {en:"education", zh:"教育"},
     "nav.contact": {en:"contact", zh:"联系"},
-    "hero.chip": {en:'<span class="dot"></span>open to internship · aug – dec 2026', zh:'<span class="dot"></span>开放实习机会 · 2026年8–12月'},
+    "hero.chip": {en:'<span class="dot"></span>open to internship · aug 23 – dec 2026', zh:'<span class="dot"></span>开放实习机会 · 2026年8月23日–12月'},
     "hero.role": {en:'Computer Science undergraduate specializing in <b>Intelligent Machines</b> — data mining, machine learning and full‑stack engineering, with a habit of turning messy data into decisions.', zh:'计算机科学(<b>智能机器</b>方向)本科生 —— 专注数据挖掘、机器学习与全栈开发,擅长把杂乱的数据变成可以落地的决策。'},
-    "hero.fit": {en:'trend fitted from coursework, projects &amp; late nights · <span class="signal">R² = 0.97</span>', zh:'这条趋势线,是课程、项目和无数个深夜一起拟合出来的 · <span class="signal">R² = 0.97</span>'},
     "hero.cta1": {en:"Email me →", zh:"给我发邮件 →"},
     "hero.cta2": {en:"See the projects", zh:"看看我的项目"},
-    "summary.h2": {en:"What I do", zh:"我在做什么"},
-    "summary.text": {en:'My background sits at the intersection of <strong>low‑level computer engineering, data mining and machine learning</strong>. I\'m comfortable writing advanced SQL/Hive against a warehouse, scripting in Linux, and building Python pipelines with Pandas and NumPy — backed by a solid grip on Java backend logic and full‑stack web development. On the analytical side, I lean on statistics and model simulation in MATLAB, using classification, clustering and other ML methods for user profiling and multi‑dimensional anomaly attribution. I\'ve also worked with <strong>LLM applications and prompt engineering</strong>, and like connecting automated engineering workflows to traditional BI dashboards so the output is something a business team can actually act on.',
-      zh:'我的背景介于<strong>底层计算机工程、数据挖掘与机器学习</strong>之间。我能熟练写进阶 SQL/Hive 查询数据仓库,在 Linux 下编写脚本,并用 Python(Pandas、NumPy)搭建数据处理流程——同时也具备扎实的 Java 后端逻辑和全栈 Web 开发能力。在分析层面,我擅长用统计学和 MATLAB 做模型仿真,运用分类、聚类等机器学习方法做用户画像与多维度异常归因。我也接触过<strong>大语言模型(LLM)应用与 Prompt Engineering</strong>,喜欢把自动化工程流程和传统 BI 看板结合起来,让分析结果真正能被业务团队用上。'},
+    "summary.h2": {en:"About Me", zh:"关于我"},
+    "summary.text": {en:'I\'m currently building personal projects around <strong>AI, data analysis, intelligent systems and automation</strong>, trying to connect technical skills with real business scenarios and explore what it actually takes to ship something useful.<br><br>Rather than staying in pure learning and research mode, I lean toward fast action, fast validation and fast iteration. Whether it\'s building this website, finishing a data analysis project, or exploring AI agents and robotic control systems, I start from a real problem and turn ideas into working results through <strong>self‑directed learning, constant debugging and iteration</strong>.<br><br>I believe execution is itself a competitive edge. When facing something unfamiliar, I\'d rather start building than wait until I feel "ready" — learning through practice and growing through feedback. For concrete results, click the skill cards below — they\'re linked to my work.',
+      zh:'目前正在围绕 <strong>AI、数据分析、智能系统与自动化应用</strong>持续构建个人项目,并尝试将技术能力与真实业务场景结合,探索技术落地的可能性。<br><br>相比于停留在学习和研究阶段,我更倾向于快速行动、快速验证和快速迭代。无论是搭建个人网站、完成数据分析项目,还是探索 AI Agent 与机器人控制系统,我都习惯从实际问题出发,通过<strong>自主学习、持续调试和不断优化</strong>,将想法逐步转化为能够运行的成果。<br><br>我相信,执行力本身就是一种竞争力。面对陌生领域时,与其等待准备充分,不如先开始构建,在实践中完成学习,在反馈中持续成长。具体的成果请点击下面的技能框,已连接到我的作品。'},
     "skills.h2": {en:"Skill set", zh:"技能"},
     "skills.count": {en:"5 categories · tap a skill to see related work", zh:"5 个类别 · 点击技能标签查看相关作品"},
     "skills.core.title": {en:"Core", zh:"核心技能"},
@@ -572,7 +581,7 @@
     "proj2.li3": {en:"Identified high‑volume products and high‑profit regions, and explained variance across categories.", zh:"找出高销量商品和高利润区域,并解释了不同品类之间的差异。"},
     "proj2.li4": {en:"Used filtering, aggregation and trend analysis to support forecasting, inventory and marketing decisions.", zh:"运用筛选、聚合和趋势分析,为预测、库存和营销决策提供支持。"},
     "edu.h2": {en:"Education &amp; availability", zh:"教育背景与实习状态"},
-    "edu.degree": {en:"Bachelor of Science, Computer Science &amp; Technology", zh:"理学学士 · 计算机科学与技术"},
+    "edu.degree": {en:"Bachelor's Degree (In Progress), Computer Science &amp; Technology", zh:"在读 · 计算机科学与技术学士"},
     "edu.spec": {en:"Specialization: Intelligent Machines", zh:"方向:智能机器"},
     "edu.c1": {en:"Database Systems", zh:"数据库系统"},
     "edu.c2": {en:"Data Mining", zh:"数据挖掘"},
@@ -580,7 +589,7 @@
     "edu.c4": {en:"Information Management", zh:"信息管理"},
     "edu.c5": {en:"Data Visualization", zh:"数据可视化"},
     "edu.c6": {en:"Computer Statistics", zh:"计算机统计学"},
-    "avail.li1": {en:"Available full‑time, Aug – Dec 2026 (~5 months)", zh:"可全职实习,2026年8月–12月(约5个月)"},
+    "avail.li1": {en:"Available full‑time, Aug 23 – Dec 2026 (~4–5 months)", zh:"可全职实习,2026年8月23日–12月(约4–5个月)"},
     "avail.li2": {en:"Schedule flexible to company requirements", zh:"时间安排可根据公司需求调整"},
     "avail.li3": {en:"Credit‑bearing university industrial training program", zh:"属于学校学分制工业实训项目"},
     "avail.li4": {en:"University requires an industry supervisor evaluation", zh:"学校要求企业导师进行实习评估"},
@@ -598,8 +607,8 @@
     "mini.h4": {en:"Tennis", zh:"网球"},
     "mini.h5": {en:"Pilates", zh:"普拉提"},
     "mini.h6": {en:"Equestrian", zh:"马术"},
-    "footer.h2": {en:"Let's talk data.", zh:"聊聊数据吧。"},
-    "footer.p": {en:"Open to a full‑time internship, Aug – Dec 2026.<br>Reach out any time.", zh:"随时欢迎联系,2026年8–12月可全职实习。"},
+    "footer.h2": {en:"Get in touch.", zh:"请联系我吧。"},
+    "footer.p": {en:"Open to a full‑time internship, Aug 23 – Dec 2026.<br>Reach out any time.", zh:"2026年8月23日–12月可全职实习,随时欢迎联系。"},
     "footer.note": {en:"built by Hanna · fitted with care, not just a trend line", zh:"由 Hanna 亲手搭建 · 用心拟合,而不只是一条趋势线"}
   };
 
@@ -712,38 +721,21 @@
     });
   }
 
-  // ---------- hero chart animation (dots as stars along the comet trail) ----------
-  const dotsGroup = document.getElementById('dots');
-  const pts = [];
-  for (let i = 0; i < 46; i++) {
-    const x = 10 + Math.random() * 840;
-    const t = x / 850;
-    const base = 175 - t * 150;
-    const y = Math.max(8, Math.min(208, base + (Math.random() - 0.5) * 60));
-    pts.push([x, y]);
-  }
-  pts.forEach(([x, y], i) => {
+  // ---------- galaxy: sprinkle twinkling stars along the spiral ----------
+  const gxStars = document.getElementById('gxStars');
+  for (let i = 0; i < 60; i++) {
+    const ang = Math.random() * Math.PI * 2;
+    const r = 10 + Math.random() * 150;
+    const x = Math.cos(ang) * r;
+    const y = Math.sin(ang) * r;
     const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    c.setAttribute('cx', x);
-    c.setAttribute('cy', y);
-    c.setAttribute('r', 2.6);
-    c.setAttribute('fill', '#CFE0FF');
-    c.setAttribute('opacity', '0');
-    dotsGroup.appendChild(c);
-    setTimeout(() => {
-      c.style.transition = 'opacity .5s ease';
-      c.setAttribute('opacity', '0.55');
-    }, 18 * i);
-  });
-
-  const line = document.getElementById('regLine');
-  const len = line.getTotalLength();
-  line.style.strokeDasharray = len;
-  line.style.strokeDashoffset = len;
-  setTimeout(() => {
-    line.style.transition = 'stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1)';
-    line.style.strokeDashoffset = 0;
-  }, 500);
+    c.setAttribute('cx', x.toFixed(1));
+    c.setAttribute('cy', y.toFixed(1));
+    c.setAttribute('r', (Math.random() * 1.4 + 0.4).toFixed(1));
+    c.setAttribute('fill', Math.random() > 0.5 ? '#FFE7CF' : '#CFE0FF');
+    c.setAttribute('opacity', (Math.random() * 0.5 + 0.25).toFixed(2));
+    gxStars.appendChild(c);
+  }
 
   // ---------- starfield ----------
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
