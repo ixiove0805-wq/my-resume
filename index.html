@@ -162,22 +162,35 @@
   .skill-card-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
   .skill-star{color:var(--signal);font-size:13px;}
   .skill-card h3{font-family:'JetBrains Mono',monospace;font-size:13.5px;font-weight:600;color:var(--star);letter-spacing:.04em;text-transform:uppercase;}
-  .tag-list{display:flex;flex-wrap:wrap;gap:9px;}
+  .tag-list{display:flex;flex-wrap:wrap;gap:10px;}
   .tag{
-    font-size:13.5px;background:rgba(255,255,255,0.03);border:1px solid var(--line);
-    border-radius:8px;padding:8px 14px;color:var(--ink);
+    font-size:14.5px;background:rgba(159,193,255,0.07);border:1px solid rgba(159,193,255,.25);
+    border-radius:9px;padding:9px 16px;color:var(--ink);font-weight:500;
   }
-  .tag.hot{background:var(--signal-soft);border-color:rgba(255,157,92,.45);color:#FFC79A;}
   .skill-tag{
-    cursor:pointer;font-family:'Inter','Noto Sans SC',sans-serif;transition:transform .15s ease, background .2s ease, border-color .2s ease;
+    position:relative;overflow:hidden;cursor:pointer;font-family:'Inter','Noto Sans SC',sans-serif;
+    transition:transform .15s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+    animation:tagTwinkle 4.5s ease-in-out infinite;
+  }
+  .skill-tag::before{
+    content:'';position:absolute;top:0;left:-60%;width:35%;height:100%;
+    background:linear-gradient(115deg, transparent, rgba(255,255,255,.45), transparent);
+    transform:skewX(-20deg);transition:left .55s ease;pointer-events:none;
+  }
+  .skill-tag:hover::before{left:130%;}
+  @keyframes tagTwinkle{
+    0%,100%{box-shadow:0 0 0 rgba(159,193,255,0);border-color:rgba(159,193,255,.25);}
+    50%{box-shadow:0 0 12px rgba(159,193,255,.22);border-color:rgba(159,193,255,.45);}
   }
   .skill-tag:hover{
-    transform:translateY(-3px) scale(1.04);
-    border-color:var(--star);
-    background:rgba(159,193,255,.12);
-    box-shadow:0 6px 16px rgba(0,0,0,.3);
+    transform:translateY(-4px) scale(1.06);
+    border-color:var(--signal);
+    background:rgba(255,157,92,.14);
+    box-shadow:0 10px 22px rgba(0,0,0,.35), 0 0 18px rgba(255,157,92,.35);
+    animation-play-state:paused;
   }
   .skill-tag:active{transform:translateY(-1px) scale(.98);}
+  @media (prefers-reduced-motion: reduce){.skill-tag{animation:none;}}
 
   /* ---------- SKILL MODAL ---------- */
   .skill-modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;}
@@ -203,6 +216,9 @@
     padding:14px 16px;text-decoration:none;transition:background .2s, border-color .2s, transform .15s;
   }
   .modal-work:hover{background:rgba(159,193,255,.1);border-color:var(--star);transform:translateX(3px);}
+  .modal-work-soon{cursor:default;opacity:.6;}
+  .modal-work-soon:hover{background:rgba(255,255,255,.04);border-color:var(--line);transform:none;}
+  .modal-work-soon-tag{display:block;margin-top:2px;color:var(--slate);font-style:italic;}
   .modal-work-title{color:var(--ink);font-size:14.5px;font-weight:500;}
   .modal-work-meta{color:var(--slate);font-size:12px;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
   .modal-empty{color:var(--slate);font-size:14.5px;padding:10px 2px;}
@@ -216,6 +232,12 @@
   .project ul{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:18px;}
   .project li{font-size:14.5px;color:#C7D2F2;padding-left:18px;position:relative;}
   .project li::before{content:'—';position:absolute;left:0;color:var(--signal);font-weight:600;}
+  .project-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px dashed var(--line);}
+  .project-link{
+    font-size:13.5px;font-weight:600;color:var(--star);text-decoration:none;
+    display:inline-flex;align-items:center;gap:5px;transition:color .2s, transform .15s;
+  }
+  .project-link:hover{color:var(--signal);transform:translateX(2px);}
 
   /* ---------- EDU / AVAILABILITY ---------- */
   .two-col{display:grid;grid-template-columns:1.1fr 1fr;gap:22px;}
@@ -297,7 +319,7 @@
   </div>
 </nav>
 
-<header class="hero">
+<header class="hero" id="heroTop">
   <div class="wrap hero-inner">
     <div class="availability-chip" data-i18n="hero.chip"><span class="dot"></span>open to internship · aug – dec 2026</div>
     <h1><span data-i18n="hero.name">ZHAO XINYI</span><span class="hanna">— Hanna —</span></h1>
@@ -365,9 +387,10 @@
       <div class="skill-card">
         <div class="skill-card-head"><span class="skill-star">✦</span><h3 data-i18n="skills.core.title">Core</h3></div>
         <div class="tag-list">
-          <button class="tag skill-tag hot" data-skill="sql">SQL</button>
-          <button class="tag skill-tag hot" data-skill="python">Python</button>
+          <button class="tag skill-tag" data-skill="sql">SQL</button>
+          <button class="tag skill-tag" data-skill="python">Python</button>
           <button class="tag skill-tag" data-skill="powerbi">Power BI</button>
+          <button class="tag skill-tag" data-skill="tableau">Tableau</button>
           <button class="tag skill-tag" data-skill="ml">Machine Learning</button>
           <button class="tag skill-tag" data-skill="dataviz">Data Visualization</button>
           <button class="tag skill-tag" data-skill="dataanalysis">Data Analysis</button>
@@ -382,6 +405,7 @@
           <button class="tag skill-tag" data-skill="llmeval">LLM Evaluation</button>
           <button class="tag skill-tag" data-skill="rag">RAG</button>
           <button class="tag skill-tag" data-skill="aiagents">AI Agents</button>
+          <button class="tag skill-tag" data-skill="sentimentanalysis">Sentiment Analysis</button>
         </div>
       </div>
 
@@ -393,6 +417,16 @@
           <button class="tag skill-tag" data-skill="webdev">Web Development</button>
           <button class="tag skill-tag" data-skill="apiintegration">API Integration</button>
           <button class="tag skill-tag" data-skill="linux">Linux</button>
+          <button class="tag skill-tag" data-skill="html">HTML</button>
+          <button class="tag skill-tag" data-skill="css">CSS</button>
+          <button class="tag skill-tag" data-skill="javascript">JavaScript</button>
+          <button class="tag skill-tag" data-skill="jquery">jQuery</button>
+          <button class="tag skill-tag" data-skill="bootstrap">Bootstrap</button>
+          <button class="tag skill-tag" data-skill="php">PHP</button>
+          <button class="tag skill-tag" data-skill="mysql">MySQL</button>
+          <button class="tag skill-tag" data-skill="mvc">MVC</button>
+          <button class="tag skill-tag" data-skill="restapi">RESTful API</button>
+          <button class="tag skill-tag" data-skill="json">JSON</button>
         </div>
       </div>
 
@@ -410,6 +444,11 @@
         <div class="tag-list">
           <button class="tag skill-tag" data-skill="businessanalysis">Business Analysis</button>
           <button class="tag skill-tag" data-skill="digitalmarketing">Digital Marketing</button>
+          <button class="tag skill-tag" data-skill="businessintelligence">Business Intelligence</button>
+          <button class="tag skill-tag" data-skill="productanalytics">Product Analytics</button>
+          <button class="tag skill-tag" data-skill="competitiveintelligence">Competitive Intelligence</button>
+          <button class="tag skill-tag" data-skill="dashboarddesign">Dashboard Design</button>
+          <button class="tag skill-tag" data-skill="kpianalysis">KPI Analysis</button>
         </div>
       </div>
 
@@ -430,11 +469,9 @@
 <section id="projects">
   <div class="wrap">
     <div class="eyebrow"><span class="path">log</span>/project_experience.csv</div>
-    <div class="section-head"><h2 data-i18n="projects.h2">Project experience</h2><span class="row-count" data-i18n="projects.count">2 rows</span></div>
+    <div class="section-head"><h2 data-i18n="projects.h2">Project experience</h2><span class="row-count" data-i18n="projects.count">4 rows</span></div>
 
-    <div class="project">
-      <div class="project-top">
-        <h3>Data‑Driven Takagi‑Sugeno‑Kang Monotone Fuzzy Inference System with Sales Data</h3>
+    <div class="project" id="proj-fyp">
         <span class="timeframe" data-i18n="proj1.timeframe">FYP · 2025 – 2026</span>
       </div>
       <div class="subtitle" data-i18n="proj1.subtitle">Final Year Project</div>
@@ -446,13 +483,29 @@
         <li data-i18n="proj1.li5">Turned feature‑importance results into business‑facing insight for sales forecasting and inventory optimization.</li>
       </ul>
       <div class="tag-list">
-        <span class="tag hot">Python</span><span class="tag">MATLAB</span><span class="tag">Random Forest</span><span class="tag">SVM</span><span class="tag">Feature Engineering</span>
+        <span class="tag">Python</span><span class="tag">MATLAB</span><span class="tag">Random Forest</span><span class="tag">SVM</span><span class="tag">Feature Engineering</span>
       </div>
     </div>
 
-    <div class="project">
-      <div class="project-top">
-        <h3>E‑Commerce Sales Analysis &amp; Dashboard Visualization</h3>
+    <div class="project" id="proj-ai">
+        <span class="timeframe" data-i18n="proj3.timeframe">Independent Project · 2025</span>
+      </div>
+      <div class="subtitle" data-i18n="proj3.subtitle">Independent Project</div>
+      <ul>
+        <li data-i18n="proj3.li1">Collected 1,600 App Store reviews across two leading AI products, Doubao and Kimi, then cleaned, deduplicated and standardized the fields.</li>
+        <li data-i18n="proj3.li2">Built a rating‑based sentiment classification model to flag positive / neutral / negative reviews and extract high‑frequency pain‑point keywords — both products showed a negative‑review rate of roughly 22–24%.</li>
+        <li data-i18n="proj3.li3">Used keyword‑frequency analysis to surface each product's positioning: Doubao leans into everyday ease of use, while Kimi focuses on professional document handling.</li>
+        <li data-i18n="proj3.li4">Built 6 types of visualizations in Matplotlib (rating distribution, sentiment trend, radar chart, user personas) and delivered a business‑insight report with product recommendations.</li>
+      </ul>
+      <div class="tag-list">
+        <span class="tag">Python</span><span class="tag">Data Analysis</span><span class="tag">Data Visualization</span><span class="tag">Business Analysis</span><span class="tag">Product Analytics</span><span class="tag">Competitive Intelligence</span><span class="tag">Sentiment Analysis</span>
+      </div>
+      <div class="project-links">
+        <a class="project-link" href="https://salt-onyx-4a1.notion.site/AI-vs-Kimi-36ba8b19e5428066b96deda660eb2b66?source=copy_link" target="_blank" rel="noopener" data-i18n="proj3.link1">View case study →</a>
+      </div>
+    </div>
+
+    <div class="project" id="proj-ecom">
         <span class="timeframe" data-i18n="proj2.timeframe">Independent Project · 2025</span>
       </div>
       <div class="subtitle" data-i18n="proj2.subtitle">Coursework</div>
@@ -463,7 +516,64 @@
         <li data-i18n="proj2.li4">Used filtering, aggregation and trend analysis to support forecasting, inventory and marketing decisions.</li>
       </ul>
       <div class="tag-list">
-        <span class="tag hot">SQL</span><span class="tag">Python</span><span class="tag">Power BI</span><span class="tag">KPI Design</span>
+        <span class="tag">SQL</span><span class="tag">Python</span><span class="tag">Power BI</span><span class="tag">KPI Design</span>
+      </div>
+    </div>
+
+    <div class="project" id="proj-dashboard">
+      <div class="project-top">
+        <h3 data-i18n="proj4.title">Sales Data Analysis &amp; Business Dashboard</h3>
+        <span class="timeframe" data-i18n="proj4.timeframe">Independent Project · 2023 – 2024</span>
+      </div>
+      <div class="subtitle" data-i18n="proj4.subtitle">Independent Project</div>
+      <ul>
+        <li data-i18n="proj4.li1">Cleaned two years of e‑commerce order data (5,000 orders) — handling outliers and removing returns — down to 4,874 valid orders.</li>
+        <li data-i18n="proj4.li2">Designed 5 core KPIs (revenue, profit, margin, AOV, order volume): total revenue of ¥14.18M with an overall margin of 44.9%.</li>
+        <li data-i18n="proj4.li3">Built an interactive Tableau Public dashboard covering monthly trends, category comparison, regional distribution and channel mix.</li>
+        <li data-i18n="proj4.li4">Found that East &amp; South China drove over 50% of revenue, Douyin livestream channels were growing fast, and the digital‑goods category had thin margins — then delivered targeted recommendations.</li>
+      </ul>
+      <div class="tag-list">
+        <span class="tag">Python</span><span class="tag">Tableau</span><span class="tag">Business Intelligence</span><span class="tag">Data Analysis</span><span class="tag">Data Visualization</span><span class="tag">Business Analysis</span><span class="tag">Dashboard Design</span><span class="tag">KPI Analysis</span>
+      </div>
+      <div class="project-links">
+        <a class="project-link" href="https://public.tableau.com/app/profile/xinyi.zhao6341/viz/2025_17797019441360/Dashboard" target="_blank" rel="noopener" data-i18n="proj4.link1">View dashboard →</a>
+        <a class="project-link" href="https://salt-onyx-4a1.notion.site/Dashboard-2023-2024-36ba8b19e5428072b633fdac068ef421" target="_blank" rel="noopener" data-i18n="proj4.link2">View case study →</a>
+      </div>
+    </div>
+
+    <div class="project" id="proj-weblab">
+      <div class="project-top">
+        <h3 data-i18n="proj5.title">Web Programming Lab — Full‑Stack PHP App</h3>
+        <span class="timeframe" data-i18n="proj5.timeframe">Coursework · UKM</span>
+      </div>
+      <div class="subtitle" data-i18n="proj5.subtitle">University Lab Assignment</div>
+      <ul>
+        <li data-i18n="proj5.li1">Built a full‑stack web app with HTML/CSS/Bootstrap on the front end and a PHP backend organized around MVC.</li>
+        <li data-i18n="proj5.li2">Used MySQL for data storage and exchanged data through a RESTful API with JSON payloads.</li>
+        <li data-i18n="proj5.li3">Added jQuery / JavaScript for client‑side interaction — form validation, dynamic content, AJAX calls.</li>
+      </ul>
+      <div class="tag-list">
+        <span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">Bootstrap</span><span class="tag">JavaScript</span><span class="tag">jQuery</span><span class="tag">PHP</span><span class="tag">MVC</span><span class="tag">MySQL</span><span class="tag">RESTful API</span><span class="tag">JSON</span>
+      </div>
+      <div class="project-links">
+        <a class="project-link" href="http://lrgs.ftsm.ukm.my/users/a206285" target="_blank" rel="noopener" data-i18n="proj5.link1">View live site →</a>
+      </div>
+    </div>
+
+    <div class="project" id="proj-annotation">
+      <div class="project-top">
+        <h3 data-i18n="proj6.title">Data Annotation &amp; Preprocessing Labs</h3>
+        <span class="timeframe" data-i18n="proj6.timeframe">Coursework Labs · 2025</span>
+      </div>
+      <div class="subtitle" data-i18n="proj6.subtitle">Academic Labs</div>
+      <ul>
+        <li data-i18n="proj6.li1">Ran YOLOv4‑tiny on the Darknet framework to detect and auto‑annotate objects in everyday scene photos (breakfast, lunch, dinner), producing bounding‑box labels for training.</li>
+        <li data-i18n="proj6.li2">Profiled the IMDB movie‑review text dataset — class balance, word frequency and sentence length — to ground later data labeling and cleaning.</li>
+        <li data-i18n="proj6.li3">Cleaned the Jena Climate time‑series dataset (missing values, Z‑score outlier detection) to prepare a well‑labeled training set.</li>
+        <li data-i18n="proj6.li4">Built RNN and LSTM models on a sliding‑window setup to forecast temperature 72 hours ahead, comparing results with MAE / RMSE.</li>
+      </ul>
+      <div class="tag-list">
+        <span class="tag">Data Annotation</span><span class="tag">Python</span><span class="tag">Machine Learning</span><span class="tag">Data Analysis</span>
       </div>
     </div>
   </div>
@@ -552,7 +662,7 @@
     "nav.education": {en:"education", zh:"教育"},
     "nav.contact": {en:"contact", zh:"联系"},
     "hero.chip": {en:'<span class="dot"></span>open to internship · aug 23 – dec 2026', zh:'<span class="dot"></span>开放实习机会 · 2026年8月23日–12月'},
-    "hero.role": {en:'Computer Science undergraduate specializing in <b>Intelligent Machines</b> — data mining, machine learning and full‑stack engineering, with a habit of turning messy data into decisions.', zh:'计算机科学(<b>智能机器</b>方向)本科生 —— 专注于 AI、数据与智能系统，擅长将复杂问题拆解为可执行方案，并通过快速学习与持续迭代将想法落地为真实成果。'},
+    "hero.role": {en:'Computer Science undergraduate specializing in <b>Intelligent Machines</b> — data mining, machine learning and full‑stack engineering, with a habit of turning messy data into decisions.', zh:'计算机科学(<b>智能机器</b>方向)本科生 —— 专注数据挖掘、机器学习与全栈开发,擅长把杂乱的数据变成可以落地的决策。'},
     "hero.cta1": {en:"Email me →", zh:"给我发邮件 →"},
     "hero.cta2": {en:"See the projects", zh:"看看我的项目"},
     "summary.h2": {en:"About Me", zh:"关于我"},
@@ -566,7 +676,7 @@
     "skills.systems.title": {en:"Systems", zh:"系统与硬件"},
     "skills.biz.title": {en:"Business", zh:"商业分析"},
     "projects.h2": {en:"Project experience", zh:"项目经历"},
-    "projects.count": {en:"2 rows", zh:"2 条记录"},
+    "projects.count": {en:"6 rows", zh:"6 条记录"},
     "proj1.timeframe": {en:"FYP · 2025 – 2026", zh:"毕业设计 · 2025–2026"},
     "proj1.subtitle": {en:"Final Year Project", zh:"毕业设计(FYP)"},
     "proj1.li1": {en:"Built an end‑to‑end sales analysis pipeline in Python (Pandas, NumPy) for cleansing, preprocessing, normalization and feature engineering on noisy sales data.", zh:"用 Python(Pandas、NumPy)搭建了端到端的销售数据分析流程,对噪声销售数据进行清洗、预处理、归一化和特征工程。"},
@@ -580,6 +690,37 @@
     "proj2.li2": {en:"Built an interactive Power BI dashboard covering sales trends, category performance and regional sales.", zh:"搭建了交互式 Power BI 看板,展示销售趋势、品类表现和区域销售情况。"},
     "proj2.li3": {en:"Identified high‑volume products and high‑profit regions, and explained variance across categories.", zh:"找出高销量商品和高利润区域,并解释了不同品类之间的差异。"},
     "proj2.li4": {en:"Used filtering, aggregation and trend analysis to support forecasting, inventory and marketing decisions.", zh:"运用筛选、聚合和趋势分析,为预测、库存和营销决策提供支持。"},
+    "proj3.title": {en:"AI Product UX &amp; Competitive Analysis (Doubao vs. Kimi)", zh:"AI产品用户体验与竞品分析(豆包 vs Kimi)"},
+    "proj3.timeframe": {en:"Independent Project · 2025", zh:"个人项目 · 2025"},
+    "proj3.subtitle": {en:"Independent Project", zh:"个人项目"},
+    "proj3.li1": {en:"Collected 1,600 App Store reviews across two leading AI products, Doubao and Kimi, then cleaned, deduplicated and standardized the fields.", zh:"采集豆包、Kimi两款主流AI产品共1600条App Store用户评论,完成数据清洗、去重、字段标准化等预处理工作。"},
+    "proj3.li2": {en:"Built a rating‑based sentiment classification model to flag positive / neutral / negative reviews and extract high‑frequency pain‑point keywords — both products showed a negative‑review rate of roughly 22–24%.", zh:"基于评分构建情绪分类模型,识别正面/中性/负面评论,提取高频痛点关键词,发现两款产品负面率均约22–24%。"},
+    "proj3.li3": {en:"Used keyword‑frequency analysis to surface each product's positioning: Doubao leans into everyday ease of use, while Kimi focuses on professional document handling.", zh:"通过关键词频次分析揭示产品差异化定位:豆包主打日常易用性,Kimi深耕专业文档处理场景。"},
+    "proj3.li4": {en:"Built 6 types of visualizations in Matplotlib (rating distribution, sentiment trend, radar chart, user personas) and delivered a business‑insight report with product recommendations.", zh:"使用Matplotlib完成6类数据可视化(评分分布、情绪趋势、雷达图、用户画像),输出商业洞察报告及产品优化建议。"},
+    "proj3.link1": {en:"View case study →", zh:"查看作品集 →"},
+    "proj4.title": {en:"Sales Data Analysis &amp; Business Dashboard", zh:"销售数据分析与商业Dashboard"},
+    "proj4.timeframe": {en:"Independent Project · 2023 – 2024", zh:"个人项目 · 2023–2024"},
+    "proj4.subtitle": {en:"Independent Project", zh:"个人项目"},
+    "proj4.li1": {en:"Cleaned two years of e‑commerce order data (5,000 orders) — handling outliers and removing returns — down to 4,874 valid orders.", zh:"基于电商平台两年销售数据(5000条订单),完成数据清洗、异常值处理、退货剔除等预处理,最终保留4874条有效订单。"},
+    "proj4.li2": {en:"Designed 5 core KPIs (revenue, profit, margin, AOV, order volume): total revenue of ¥14.18M with an overall margin of 44.9%.", zh:"设计5大核心KPI(营收、利润、利润率、客单价、订单量),总营收¥1,418万,整体利润率44.9%。"},
+    "proj4.li3": {en:"Built an interactive Tableau Public dashboard covering monthly trends, category comparison, regional distribution and channel mix.", zh:"使用Tableau Public搭建可交互Dashboard,覆盖月度趋势、品类对比、地区分布、渠道占比四大分析维度。"},
+    "proj4.li4": {en:"Found that East &amp; South China drove over 50% of revenue, Douyin livestream channels were growing fast, and the digital‑goods category had thin margins — then delivered targeted recommendations.", zh:"发现华东华南贡献超50%营收、抖音直播渠道增速显著、数码品类利润率偏低等商业问题,输出针对性优化建议。"},
+    "proj4.link1": {en:"View dashboard →", zh:"查看 Dashboard →"},
+    "proj4.link2": {en:"View case study →", zh:"查看作品集 →"},
+    "proj5.title": {en:"Web Programming Lab — Full‑Stack PHP App", zh:"网页编程实验:全栈 PHP 应用"},
+    "proj5.timeframe": {en:"Coursework · UKM", zh:"课程实验 · UKM"},
+    "proj5.subtitle": {en:"University Lab Assignment", zh:"大学课程实验作业"},
+    "proj5.li1": {en:"Built a full‑stack web app with HTML/CSS/Bootstrap on the front end and a PHP backend organized around MVC.", zh:"前端用 HTML/CSS/Bootstrap 搭建界面,后端用 PHP 按 MVC 架构组织,完成了一个全栈网页应用。"},
+    "proj5.li2": {en:"Used MySQL for data storage and exchanged data through a RESTful API with JSON payloads.", zh:"使用 MySQL 进行数据存储,并通过 RESTful API 以 JSON 格式进行数据交换。"},
+    "proj5.li3": {en:"Added jQuery / JavaScript for client‑side interaction — form validation, dynamic content, AJAX calls.", zh:"用 jQuery / JavaScript 实现前端交互——表单验证、动态内容更新、AJAX 异步请求。"},
+    "proj5.link1": {en:"View live site →", zh:"查看实际网站 →"},
+    "proj6.title": {en:"Data Annotation &amp; Preprocessing Labs", zh:"数据标注与预处理实验"},
+    "proj6.timeframe": {en:"Coursework Labs · 2025", zh:"课程实验 · 2025"},
+    "proj6.subtitle": {en:"Academic Labs", zh:"学校课程实验"},
+    "proj6.li1": {en:"Ran YOLOv4‑tiny on the Darknet framework to detect and auto‑annotate objects in everyday scene photos (breakfast, lunch, dinner), producing bounding‑box labels for training.", zh:"基于 Darknet 框架运行 YOLOv4‑tiny,对日常场景图片(早餐/午餐/晚餐)进行目标检测与自动标注,生成可用于训练的边界框标签。"},
+    "proj6.li2": {en:"Profiled the IMDB movie‑review text dataset — class balance, word frequency and sentence length — to ground later data labeling and cleaning.", zh:"对 IMDB 影评文本数据集进行类别分布、词频与句长统计分析,为后续的数据标注与清洗打基础。"},
+    "proj6.li3": {en:"Cleaned the Jena Climate time‑series dataset (missing values, Z‑score outlier detection) to prepare a well‑labeled training set.", zh:"清洗 Jena Climate 气候时间序列数据(缺失值处理、Z‑score 异常值检测),准备高质量的标注训练集。"},
+    "proj6.li4": {en:"Built RNN and LSTM models on a sliding‑window setup to forecast temperature 72 hours ahead, comparing results with MAE / RMSE.", zh:"基于滑动窗口构建 RNN 与 LSTM 模型预测未来72小时温度,并用 MAE / RMSE 对比两种模型表现。"},
     "edu.h2": {en:"Education &amp; availability", zh:"教育背景与实习状态"},
     "edu.degree": {en:"Bachelor's Degree (In Progress), Computer Science &amp; Technology", zh:"在读 · 计算机科学与技术学士"},
     "edu.spec": {en:"Specialization: Intelligent Machines", zh:"方向:智能机器"},
@@ -631,43 +772,54 @@
 
   // ---------- skills: related work data ----------
   // Add more entries to any `works` array later — each item shows as a clickable card in the popup.
+  // url starting with "#" scrolls to that section on this same page; a real http(s) link opens in a new tab.
+  const wEcomPBI = {en:'E‑Commerce Sales Dashboard', zh:'电商销售数据看板', meta:'SQL · Power BI · 2025', url:'#proj-ecom'};
+  const wFyp = {en:'Sales Fuzzy Inference (FYP)', zh:'销售数据模糊推理系统(毕设)', meta:'Python · MATLAB · 2025–2026', url:'#proj-fyp'};
+  const wAICompete = {en:'AI Product UX & Competitive Analysis', zh:'AI产品用户体验与竞品分析', meta:'Python · Matplotlib · 2025', url:'https://salt-onyx-4a1.notion.site/AI-vs-Kimi-36ba8b19e5428066b96deda660eb2b66?source=copy_link'};
+  const wTableauDash = {en:'Sales Data Analysis & Business Dashboard', zh:'销售数据分析与商业Dashboard', meta:'Python · Tableau Public · 2023–2024', url:'https://salt-onyx-4a1.notion.site/Dashboard-2023-2024-36ba8b19e5428072b633fdac068ef421'};
+  const wWebApp = {en:'Web Programming Lab (Live Site)', zh:'网页编程实验(实际网站)', meta:'PHP · MySQL · Bootstrap', url:'http://lrgs.ftsm.ukm.my/users/a206285'};
+  const wSelfSite = {en:"This portfolio website — you're looking at it 👋", zh:'就是它本身呀 👋 —— 你现在看的这个网站', meta:'HTML · CSS · JS · 2026', url:'#heroTop'};
+  const wAnnotation = {en:'Data Annotation & Preprocessing Labs', zh:'数据标注与预处理实验', meta:'Python · YOLOv4 · RNN/LSTM · 2025', url:'#proj-annotation'};
+
   const skillData = {
-    sql: {en:'SQL', zh:'SQL', works:[
-      {en:'E‑Commerce Sales Dashboard', zh:'电商销售数据看板', meta:'SQL · Power BI · 2025', url:'#'},
-      {en:'Sales Fuzzy Inference (FYP)', zh:'销售数据模糊推理系统(毕设)', meta:'Python · MATLAB · 2025–2026', url:'#'}
-    ]},
-    python: {en:'Python', zh:'Python', works:[
-      {en:'E‑Commerce Sales Dashboard', zh:'电商销售数据看板', meta:'SQL · Python · 2025', url:'#'},
-      {en:'Sales Fuzzy Inference (FYP)', zh:'销售数据模糊推理系统(毕设)', meta:'Python · MATLAB · 2025–2026', url:'#'}
-    ]},
-    powerbi: {en:'Power BI', zh:'Power BI', works:[
-      {en:'E‑Commerce Sales Dashboard', zh:'电商销售数据看板', meta:'Power BI · 2025', url:'#'}
-    ]},
-    ml: {en:'Machine Learning', zh:'机器学习', works:[
-      {en:'Sales Fuzzy Inference (FYP)', zh:'销售数据模糊推理系统(毕设)', meta:'Random Forest · SVM · 2025–2026', url:'#'}
-    ]},
-    dataviz: {en:'Data Visualization', zh:'数据可视化', works:[
-      {en:'E‑Commerce Sales Dashboard', zh:'电商销售数据看板', meta:'Power BI · 2025', url:'#'}
-    ]},
-    dataanalysis: {en:'Data Analysis', zh:'数据分析', works:[
-      {en:'E‑Commerce Sales Dashboard', zh:'电商销售数据看板', meta:'SQL · Python · 2025', url:'#'},
-      {en:'Sales Fuzzy Inference (FYP)', zh:'销售数据模糊推理系统(毕设)', meta:'Python · MATLAB · 2025–2026', url:'#'}
-    ]},
-    dataannotation: {en:'Data Annotation', zh:'数据标注', works:[]},
+    sql: {en:'SQL', zh:'SQL', works:[wEcomPBI, wFyp]},
+    python: {en:'Python', zh:'Python', works:[wEcomPBI, wFyp, wAICompete, wTableauDash, wAnnotation]},
+    powerbi: {en:'Power BI', zh:'Power BI', works:[wEcomPBI]},
+    tableau: {en:'Tableau', zh:'Tableau', works:[wTableauDash]},
+    ml: {en:'Machine Learning', zh:'机器学习', works:[wFyp, wAnnotation]},
+    dataviz: {en:'Data Visualization', zh:'数据可视化', works:[wEcomPBI, wAICompete, wTableauDash]},
+    dataanalysis: {en:'Data Analysis', zh:'数据分析', works:[wEcomPBI, wFyp, wAICompete, wTableauDash, wAnnotation]},
+    dataannotation: {en:'Data Annotation', zh:'数据标注', works:[wAnnotation]},
     promptengineering: {en:'Prompt Engineering', zh:'Prompt Engineering', works:[]},
     llmeval: {en:'LLM Evaluation', zh:'大模型评估', works:[]},
     rag: {en:'RAG', zh:'RAG', works:[]},
     aiagents: {en:'AI Agents', zh:'AI Agents', works:[]},
-    git: {en:'Git / GitHub', zh:'Git / GitHub', works:[]},
-    database: {en:'Database', zh:'数据库', works:[]},
-    webdev: {en:'Web Development', zh:'Web 开发', works:[]},
-    apiintegration: {en:'API Integration', zh:'API 集成', works:[]},
+    sentimentanalysis: {en:'Sentiment Analysis', zh:'情感分析', works:[wAICompete]},
+    git: {en:'Git / GitHub', zh:'Git / GitHub', works:[wWebApp]},
+    database: {en:'Database', zh:'数据库', works:[wWebApp]},
+    webdev: {en:'Web Development', zh:'Web 开发', works:[wWebApp, wSelfSite]},
+    apiintegration: {en:'API Integration', zh:'API 集成', works:[wWebApp]},
     linux: {en:'Linux', zh:'Linux', works:[]},
+    html: {en:'HTML', zh:'HTML', works:[wWebApp, wSelfSite]},
+    css: {en:'CSS', zh:'CSS', works:[wWebApp, wSelfSite]},
+    javascript: {en:'JavaScript', zh:'JavaScript', works:[wWebApp, wSelfSite]},
+    jquery: {en:'jQuery', zh:'jQuery', works:[wWebApp]},
+    bootstrap: {en:'Bootstrap', zh:'Bootstrap', works:[wWebApp]},
+    php: {en:'PHP', zh:'PHP', works:[wWebApp]},
+    mvc: {en:'MVC', zh:'MVC', works:[wWebApp]},
+    mysql: {en:'MySQL', zh:'MySQL', works:[wWebApp]},
+    restapi: {en:'RESTful API', zh:'RESTful API', works:[wWebApp]},
+    json: {en:'JSON', zh:'JSON', works:[wWebApp]},
     robotics: {en:'Robotics', zh:'机器人', works:[]},
     ros: {en:'ROS', zh:'ROS', works:[]},
     remotecontrol: {en:'Remote Control Systems', zh:'远程控制系统', works:[]},
-    businessanalysis: {en:'Business Analysis', zh:'商业分析', works:[]},
-    digitalmarketing: {en:'Digital Marketing', zh:'数字营销', works:[]}
+    businessanalysis: {en:'Business Analysis', zh:'商业分析', works:[wAICompete, wTableauDash]},
+    digitalmarketing: {en:'Digital Marketing', zh:'数字营销', works:[]},
+    businessintelligence: {en:'Business Intelligence', zh:'商业智能', works:[wTableauDash]},
+    productanalytics: {en:'Product Analytics', zh:'产品分析', works:[wAICompete]},
+    competitiveintelligence: {en:'Competitive Intelligence', zh:'竞品分析', works:[wAICompete]},
+    dashboarddesign: {en:'Dashboard Design', zh:'仪表盘设计', works:[wTableauDash, wEcomPBI]},
+    kpianalysis: {en:'KPI Analysis', zh:'KPI 分析', works:[wTableauDash]}
   };
 
   let currentSkillKey = null;
@@ -687,12 +839,18 @@
       list.appendChild(p);
     } else {
       data.works.forEach(w => {
-        const a = document.createElement('a');
-        a.href = w.url || '#';
-        a.className = 'modal-work';
-        if (w.url && w.url !== '#') a.target = '_blank';
-        a.innerHTML = `<span class="modal-work-title">${currentLang === 'zh' ? w.zh : w.en}</span><span class="modal-work-meta">${w.meta}</span>`;
-        list.appendChild(a);
+        const isInPage = w.url && w.url.startsWith('#');
+        const hasUrl = !!w.url;
+        const el = document.createElement(hasUrl ? 'a' : 'div');
+        el.className = 'modal-work' + (hasUrl ? '' : ' modal-work-soon');
+        if (hasUrl){
+          el.href = w.url;
+          if (!isInPage){ el.target = '_blank'; el.rel = 'noopener'; }
+          el.addEventListener('click', () => closeSkillModal());
+        }
+        const soonTag = hasUrl ? '' : `<span class="modal-work-soon-tag">${currentLang === 'zh' ? '链接整理中' : 'link coming soon'}</span>`;
+        el.innerHTML = `<span class="modal-work-title">${currentLang === 'zh' ? w.zh : w.en}</span><span class="modal-work-meta">${w.meta}${soonTag}</span>`;
+        list.appendChild(el);
       });
     }
     document.getElementById('skillModal').classList.add('open');
@@ -704,6 +862,11 @@
     btn.addEventListener('click', () => openSkillModal(btn.getAttribute('data-skill')));
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSkillModal(); });
+
+  // stagger the ambient twinkle so tags don't all pulse in sync
+  document.querySelectorAll('.skill-tag').forEach(el => {
+    el.style.animationDelay = (Math.random() * 4.5).toFixed(2) + 's';
+  });
 
   // ---------- 3D tilt on skill cards ----------
   if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && window.matchMedia('(min-width: 700px)').matches){
