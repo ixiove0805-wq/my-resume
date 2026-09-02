@@ -104,7 +104,7 @@ export default async function handler(req) {
       const errText = await geminiRes.text();
       console.error('Gemini error:', errText);
       return new Response(
-        JSON.stringify({ error: 'AI service error. Please try again.' }),
+        JSON.stringify({ error: `Gemini error ${geminiRes.status}: ${errText.slice(0, 200)}` }),
         { status: 502, headers }
       );
     }
