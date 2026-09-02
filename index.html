@@ -222,6 +222,10 @@
   .modal-work-title{color:var(--ink);font-size:14.5px;font-weight:500;}
   .modal-work-meta{color:var(--slate);font-size:12px;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
   .modal-empty{color:var(--slate);font-size:14.5px;padding:10px 2px;}
+  .skills-note{
+    margin-top:26px;text-align:center;font-size:13.5px;color:var(--slate);
+    padding-top:20px;border-top:1px dashed var(--line);
+  }
 
   /* ---------- PROJECTS ---------- */
   .project{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:30px 30px 26px;margin-bottom:20px;backdrop-filter:blur(8px);}
@@ -453,6 +457,7 @@
       </div>
 
     </div>
+    <p class="skills-note" data-i18n="skills.note">Some skills aren't linked to a case study yet — for those, feel free to reach out and I'll walk you through the actual project files.</p>
   </div>
 </section>
 
@@ -544,7 +549,7 @@
     <div class="project" id="proj-weblab">
       <div class="project-top">
         <h3 data-i18n="proj5.title">Web Programming Lab — Full‑Stack PHP App</h3>
-        <span class="timeframe" data-i18n="proj5.timeframe">Coursework · UKM</span>
+        <span class="timeframe" data-i18n="proj5.timeframe">Coursework · 2024</span>
       </div>
       <div class="subtitle" data-i18n="proj5.subtitle">University Lab Assignment</div>
       <ul>
@@ -553,7 +558,7 @@
         <li data-i18n="proj5.li3">Added jQuery / JavaScript for client‑side interaction — form validation, dynamic content, AJAX calls.</li>
       </ul>
       <div class="tag-list">
-        <span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">Bootstrap</span><span class="tag">JavaScript</span><span class="tag">jQuery</span><span class="tag">PHP</span><span class="tag">MVC</span><span class="tag">MySQL</span><span class="tag">RESTful API</span><span class="tag">JSON</span>
+        <span class="tag">PHP / MVC</span><span class="tag">MySQL</span><span class="tag">RESTful API · JSON</span><span class="tag">HTML/CSS/Bootstrap</span><span class="tag">JavaScript · jQuery</span>
       </div>
       <div class="project-links">
         <a class="project-link" href="http://lrgs.ftsm.ukm.my/users/a206285" target="_blank" rel="noopener" data-i18n="proj5.link1">View live site →</a>
@@ -574,6 +579,29 @@
       </ul>
       <div class="tag-list">
         <span class="tag">Data Annotation</span><span class="tag">Python</span><span class="tag">Machine Learning</span><span class="tag">Data Analysis</span>
+      </div>
+      <div class="project-links">
+        <a class="project-link" href="yolo-annotation-lab.html" target="_blank" rel="noopener" data-i18n="proj6.link1">View YOLO notebook →</a>
+        <a class="project-link" href="text-timeseries-lab.html" target="_blank" rel="noopener" data-i18n="proj6.link2">View text/time‑series notebook →</a>
+      </div>
+    </div>
+
+    <div class="project" id="proj-agent">
+      <div class="project-top">
+        <h3 data-i18n="proj7.title">AI Business Analyst Agent</h3>
+        <span class="timeframe" data-i18n="proj7.timeframe">In Progress · 2026</span>
+      </div>
+      <div class="subtitle" data-i18n="proj7.subtitle">Personal Project · AI Agent</div>
+      <ul>
+        <li data-i18n="proj7.li1">Building an AI-powered business analyst agent that takes a natural-language business question and returns structured analysis — KPIs, root-cause breakdown, anomaly flags, and prioritised recommendations.</li>
+        <li data-i18n="proj7.li2">Phase 1 complete: full responsive frontend with chat interface, agent activity feed, result panel and chart area — no dependencies, pure HTML/CSS/JS.</li>
+        <li data-i18n="proj7.li3">Phase 2 in planning: connect to an LLM API so the agent produces real analysis from real business questions.</li>
+      </ul>
+      <div class="tag-list">
+        <span class="tag">AI Agents</span><span class="tag">LLM</span><span class="tag">Python</span><span class="tag">Business Analysis</span><span class="tag">Data Analysis</span>
+      </div>
+      <div class="project-links">
+        <a class="project-link" href="agent.html" data-i18n="proj7.link1">Try the Agent →</a>
       </div>
     </div>
   </div>
@@ -675,8 +703,9 @@
     "skills.eng.title": {en:"Engineering", zh:"工程开发"},
     "skills.systems.title": {en:"Systems", zh:"系统与硬件"},
     "skills.biz.title": {en:"Business", zh:"商业分析"},
+    "skills.note": {en:"Some skills aren't linked to a case study yet — for those, feel free to reach out and I'll walk you through the actual project files.", zh:"部分技能暂时还没关联具体的案例链接,如果想看实际项目文件,欢迎随时联系我,我可以详细给你讲解。"},
     "projects.h2": {en:"Project experience", zh:"项目经历"},
-    "projects.count": {en:"6 rows", zh:"6 条记录"},
+    "projects.count": {en:"7 rows", zh:"7 条记录"},
     "proj1.timeframe": {en:"FYP · 2025 – 2026", zh:"毕业设计 · 2025–2026"},
     "proj1.subtitle": {en:"Final Year Project", zh:"毕业设计(FYP)"},
     "proj1.li1": {en:"Built an end‑to‑end sales analysis pipeline in Python (Pandas, NumPy) for cleansing, preprocessing, normalization and feature engineering on noisy sales data.", zh:"用 Python(Pandas、NumPy)搭建了端到端的销售数据分析流程,对噪声销售数据进行清洗、预处理、归一化和特征工程。"},
@@ -708,7 +737,7 @@
     "proj4.link1": {en:"View dashboard →", zh:"查看 Dashboard →"},
     "proj4.link2": {en:"View case study →", zh:"查看作品集 →"},
     "proj5.title": {en:"Web Programming Lab — Full‑Stack PHP App", zh:"网页编程实验:全栈 PHP 应用"},
-    "proj5.timeframe": {en:"Coursework · UKM", zh:"课程实验 · UKM"},
+    "proj5.timeframe": {en:"Coursework · 2024", zh:"课程实验 · 2024"},
     "proj5.subtitle": {en:"University Lab Assignment", zh:"大学课程实验作业"},
     "proj5.li1": {en:"Built a full‑stack web app with HTML/CSS/Bootstrap on the front end and a PHP backend organized around MVC.", zh:"前端用 HTML/CSS/Bootstrap 搭建界面,后端用 PHP 按 MVC 架构组织,完成了一个全栈网页应用。"},
     "proj5.li2": {en:"Used MySQL for data storage and exchanged data through a RESTful API with JSON payloads.", zh:"使用 MySQL 进行数据存储,并通过 RESTful API 以 JSON 格式进行数据交换。"},
@@ -721,6 +750,15 @@
     "proj6.li2": {en:"Profiled the IMDB movie‑review text dataset — class balance, word frequency and sentence length — to ground later data labeling and cleaning.", zh:"对 IMDB 影评文本数据集进行类别分布、词频与句长统计分析,为后续的数据标注与清洗打基础。"},
     "proj6.li3": {en:"Cleaned the Jena Climate time‑series dataset (missing values, Z‑score outlier detection) to prepare a well‑labeled training set.", zh:"清洗 Jena Climate 气候时间序列数据(缺失值处理、Z‑score 异常值检测),准备高质量的标注训练集。"},
     "proj6.li4": {en:"Built RNN and LSTM models on a sliding‑window setup to forecast temperature 72 hours ahead, comparing results with MAE / RMSE.", zh:"基于滑动窗口构建 RNN 与 LSTM 模型预测未来72小时温度,并用 MAE / RMSE 对比两种模型表现。"},
+    "proj6.link1": {en:"View YOLO notebook →", zh:"查看 YOLO 标注 Notebook →"},
+    "proj6.link2": {en:"View text/time‑series notebook →", zh:"查看文本/时间序列 Notebook →"},
+    "proj7.title":    {en:"AI Business Analyst Agent", zh:"AI 商业分析 Agent"},
+    "proj7.timeframe":{en:"In Progress · 2026", zh:"进行中 · 2026"},
+    "proj7.subtitle": {en:"Personal Project · AI Agent", zh:"个人项目 · AI Agent"},
+    "proj7.li1": {en:"Building an AI-powered business analyst agent that takes a natural-language business question and returns structured analysis — KPIs, root-cause breakdown, anomaly flags, and prioritised recommendations.", zh:"正在构建一个 AI 商业分析 Agent，输入自然语言业务问题，输出结构化分析结果——包括核心 KPI、根因拆解、异常标记和优先级建议。"},
+    "proj7.li2": {en:"Phase 1 complete: full responsive frontend with chat interface, agent activity feed, result panel and chart area — no dependencies, pure HTML/CSS/JS.", zh:"Phase 1 已完成：包含对话界面、Agent 活动追踪、分析结果和图表区域的完整响应式前端，纯 HTML/CSS/JS，无需任何依赖。"},
+    "proj7.li3": {en:"Phase 2 in planning: connect to an LLM API so the agent produces real analysis from real business questions.", zh:"Phase 2 规划中：接入大语言模型 API，让 Agent 能对真实业务问题输出真实分析结果。"},
+    "proj7.link1": {en:"Try the Agent →", zh:"体验 Agent →"},
     "edu.h2": {en:"Education &amp; availability", zh:"教育背景与实习状态"},
     "edu.degree": {en:"Bachelor's Degree (In Progress), Computer Science &amp; Technology", zh:"在读 · 计算机科学与技术学士"},
     "edu.spec": {en:"Specialization: Intelligent Machines", zh:"方向:智能机器"},
@@ -779,21 +817,24 @@
   const wTableauDash = {en:'Sales Data Analysis & Business Dashboard', zh:'销售数据分析与商业Dashboard', meta:'Python · Tableau Public · 2023–2024', url:'https://salt-onyx-4a1.notion.site/Dashboard-2023-2024-36ba8b19e5428072b633fdac068ef421'};
   const wWebApp = {en:'Web Programming Lab (Live Site)', zh:'网页编程实验(实际网站)', meta:'PHP · MySQL · Bootstrap', url:'http://lrgs.ftsm.ukm.my/users/a206285'};
   const wSelfSite = {en:"This portfolio website — you're looking at it 👋", zh:'就是它本身呀 👋 —— 你现在看的这个网站', meta:'HTML · CSS · JS · 2026', url:'#heroTop'};
-  const wAnnotation = {en:'Data Annotation & Preprocessing Labs', zh:'数据标注与预处理实验', meta:'Python · YOLOv4 · RNN/LSTM · 2025', url:'#proj-annotation'};
+  const wYoloLab = {en:'Image Object Detection & Auto‑Annotation (YOLOv4)', zh:'图像目标检测与自动标注(YOLOv4)', meta:'Python · YOLOv4 · Darknet · 2025', url:'yolo-annotation-lab.html'};
+  const wTextTSLab = {en:'Text & Time‑Series Data Labs', zh:'文本与时间序列数据实验', meta:'Python · TensorFlow · RNN/LSTM · 2025', url:'text-timeseries-lab.html'};
 
   const skillData = {
     sql: {en:'SQL', zh:'SQL', works:[wEcomPBI, wFyp]},
-    python: {en:'Python', zh:'Python', works:[wEcomPBI, wFyp, wAICompete, wTableauDash, wAnnotation]},
+    python: {en:'Python', zh:'Python', works:[wEcomPBI, wFyp, wAICompete, wTableauDash, wYoloLab, wTextTSLab]},
     powerbi: {en:'Power BI', zh:'Power BI', works:[wEcomPBI]},
     tableau: {en:'Tableau', zh:'Tableau', works:[wTableauDash]},
-    ml: {en:'Machine Learning', zh:'机器学习', works:[wFyp, wAnnotation]},
+    ml: {en:'Machine Learning', zh:'机器学习', works:[wFyp, wYoloLab, wTextTSLab]},
     dataviz: {en:'Data Visualization', zh:'数据可视化', works:[wEcomPBI, wAICompete, wTableauDash]},
-    dataanalysis: {en:'Data Analysis', zh:'数据分析', works:[wEcomPBI, wFyp, wAICompete, wTableauDash, wAnnotation]},
-    dataannotation: {en:'Data Annotation', zh:'数据标注', works:[wAnnotation]},
+    dataanalysis: {en:'Data Analysis', zh:'数据分析', works:[wEcomPBI, wFyp, wAICompete, wTableauDash, wTextTSLab]},
+    dataannotation: {en:'Data Annotation', zh:'数据标注', works:[wYoloLab, wTextTSLab]},
     promptengineering: {en:'Prompt Engineering', zh:'Prompt Engineering', works:[]},
     llmeval: {en:'LLM Evaluation', zh:'大模型评估', works:[]},
     rag: {en:'RAG', zh:'RAG', works:[]},
-    aiagents: {en:'AI Agents', zh:'AI Agents', works:[]},
+    aiagents: {en:'AI Agents', zh:'AI Agents', works:[
+      {en:'AI Business Analyst Agent (live demo)', zh:'AI 商业分析 Agent（在线体验）', meta:'Phase 1 UI · Phase 2 LLM coming', url:'agent.html'}
+    ]},
     sentimentanalysis: {en:'Sentiment Analysis', zh:'情感分析', works:[wAICompete]},
     git: {en:'Git / GitHub', zh:'Git / GitHub', works:[wWebApp]},
     database: {en:'Database', zh:'数据库', works:[wWebApp]},
