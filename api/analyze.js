@@ -1,27 +1,5 @@
 export const config = { runtime: 'edge' };
 
-const SYSTEM_PROMPT = `You are a senior business analyst. Return ONLY a JSON object with this exact structure:
-{
-  "summary": "One sentence summarising the business problem.",
-  "kpis": [
-    { "label": "KPI name", "value": "value or % change", "trend": "up" },
-    { "label": "KPI name", "value": "value or % change", "trend": "down" },
-    { "label": "KPI name", "value": "value or % change", "trend": "neutral" }
-  ],
-  "insights": [
-    { "type": "warn", "text": "Key finding." },
-    { "type": "info", "text": "Context or pattern." },
-    { "type": "up",   "text": "Opportunity or positive signal." }
-  ],
-  "recommendations": [
-    { "priority": "High",   "action": "Specific action", "impact": "Expected outcome" },
-    { "priority": "High",   "action": "Specific action", "impact": "Expected outcome" },
-    { "priority": "Medium", "action": "Specific action", "impact": "Expected outcome" }
-  ],
-  "framework": "Name of analytical framework used"
-}
-trend: up/down/neutral. type: up/warn/info. priority: High/Medium/Low.`;
-
 export default async function handler(req) {
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: {
@@ -47,25 +25,40 @@ export default async function handler(req) {
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'API key not configured on server.' }), { status: 500, headers });
+      return new Response(JSON.stringify({ error: 'API key not configured.' }), { status: 500, headers });
     }
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const prompt = `You are a senior business analyst. The user asks: "${question.trim()}" (Analysis mode: ${mode || 'Free-form'})
+
+Respond with ONLY this JSON object, no other text:
+{
+  "summary": "One sentence summary of the problem and approach.",
+  "kpis": [
+    { "label": "KPI name", "value": "value or % change", "trend": "up" },
+    { "label": "KPI name", "value": "value or % change", "trend": "down" },
+    { "label": "KPI name", "value": "value or % change", "trend": "neutral" }
+  ],
+  "insights": [
+    { "type": "warn", "text": "Key finding with specific detail." },
+    { "type": "info", "text": "Context or pattern that explains the finding." },
+    { "type": "up", "text": "Opportunity or positive signal." }
+  ],
+  "recommendations": [
+    { "priority": "High", "action": "Specific action", "impact": "Expected outcome" },
+    { "priority": "High", "action": "Specific action", "impact": "Expected outcome" },
+    { "priority": "Medium", "action": "Specific action", "impact": "Expected outcome" }
+  ],
+  "framework": "Name of analytical framework used"
+}`;
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
     const geminiRes = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        contents: [{
-          role: 'user',
-          parts: [{ text: `Analysis mode: ${mode || 'Free-form'}\n\nQuestion: ${question.trim()}` }]
-        }],
-        generationConfig: {
-          temperature: 0.3,
-          maxOutputTokens: 1024,
-          responseMimeType: 'application/json'
-        }
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.3, maxOutputTokens: 1024 }
       })
     });
 
@@ -73,7 +66,7 @@ export default async function handler(req) {
 
     if (!geminiRes.ok) {
       return new Response(
-        JSON.stringify({ error: `Gemini API error ${geminiRes.status}: ${responseText.slice(0, 300)}` }),
+        JSON.stringify({ error: `Gemini error ${geminiRes.status}: ${responseText.slice(0, 300)}` }),
         { status: 502, headers }
       );
     }
@@ -85,7 +78,14 @@ export default async function handler(req) {
       return new Response(JSON.stringify({ error: 'Empty response from Gemini.' }), { status: 502, headers });
     }
 
-    const analysis = JSON.parse(rawText);
+    // Extract JSON — find first { and last }
+    const start = rawText.indexOf('{');
+    const end = rawText.lastIndexOf('}');
+    if (start === -1 || end === -1) {
+      return new Response(JSON.stringify({ error: `Could not find JSON in response: ${rawText.slice(0, 200)}` }), { status: 502, headers });
+    }
+    const analysis = JSON.parse(rawText.slice(start, end + 1));
+
     return new Response(JSON.stringify({ ok: true, analysis }), { status: 200, headers });
 
   } catch (err) {
