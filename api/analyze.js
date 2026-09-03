@@ -1,138 +1,123 @@
 export const config = { runtime: 'edge' };
 
-// ── System prompt ────────────────────────────────────────────
-const SYSTEM_PROMPT = `You are a senior business analyst with expertise in data analysis, KPI design, and strategic recommendations. 
-
-When given a business question, you MUST respond with ONLY valid JSON — no markdown, no code fences, no explanation outside the JSON.
+const SYSTEM_PROMPT = `You are a senior business analyst. Respond with ONLY a valid JSON object, no other text before or after.
 
 Return exactly this structure:
 {
-  "summary": "One clear sentence summarising the core business problem and your analytical approach.",
+  "summary": "One sentence summarising the business problem and approach.",
   "kpis": [
-    { "label": "KPI name (short)", "value": "numeric value or % change", "trend": "up" },
-    { "label": "KPI name (short)", "value": "numeric value or % change", "trend": "down" },
-    { "label": "KPI name (short)", "value": "numeric value or % change", "trend": "neutral" }
+    { "label": "Short KPI name", "value": "value or % change", "trend": "up" },
+    { "label": "Short KPI name", "value": "value or % change", "trend": "down" },
+    { "label": "Short KPI name", "value": "value or % change", "trend": "neutral" }
   ],
   "insights": [
-    { "type": "warn",  "text": "Key finding with specific data point." },
-    { "type": "info",  "text": "Context or pattern that explains the finding." },
-    { "type": "up",    "text": "Opportunity or positive signal identified." }
+    { "type": "warn", "text": "Key finding with specific detail." },
+    { "type": "info", "text": "Context or pattern that explains the finding." },
+    { "type": "up",   "text": "Opportunity or positive signal." }
   ],
   "recommendations": [
-    { "priority": "High",   "action": "Specific action to take", "impact": "Expected measurable outcome" },
-    { "priority": "High",   "action": "Specific action to take", "impact": "Expected measurable outcome" },
-    { "priority": "Medium", "action": "Specific action to take", "impact": "Expected measurable outcome" }
+    { "priority": "High",   "action": "Specific action", "impact": "Expected outcome" },
+    { "priority": "High",   "action": "Specific action", "impact": "Expected outcome" },
+    { "priority": "Medium", "action": "Specific action", "impact": "Expected outcome" }
   ],
-  "framework": "Name of the analytical framework applied (e.g. Root Cause Analysis, MECE, 5-Why, Pareto, etc.)"
+  "framework": "Name of analytical framework used"
 }
 
-Rules:
-- kpis: exactly 3 items. trend must be one of: "up", "down", "neutral"
-- insights: 3 to 4 items. type must be one of: "up", "warn", "info"
-- recommendations: 2 to 4 items. priority must be: "High", "Medium", or "Low"
-- Use real business reasoning. Be specific, not generic.
-- If the question lacks data, make reasonable assumptions and flag them in insights.
-- Output ONLY the raw JSON object. No other text.`;
+Rules: trend must be up/down/neutral. type must be up/warn/info. priority must be High/Medium/Low. Output ONLY the raw JSON object.`;
 
-// ── Handler ──────────────────────────────────────────────────
+// Try models in order until one works
+const MODELS = [
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-8b',
+  'gemini-1.5-pro',
+];
+
+async function callGemini(apiKey, model, question, mode) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{
+        role: 'user',
+        parts: [
+          { text: SYSTEM_PROMPT },
+          { text: `Analysis mode: ${mode}\n\nBusiness question:\n${question}` }
+        ]
+      }],
+      generationConfig: { temperature: 0.3, maxOutputTokens: 1024 }
+    })
+  });
+  return res;
+}
+
+function extractJSON(text) {
+  // Strip markdown code fences
+  let cleaned = text.replace(/```json|```/g, '').trim();
+  // Find first { and last } to extract JSON object
+  const start = cleaned.indexOf('{');
+  const end = cleaned.lastIndexOf('}');
+  if (start !== -1 && end !== -1 && end > start) {
+    cleaned = cleaned.slice(start, end + 1);
+  }
+  return JSON.parse(cleaned);
+}
+
 export default async function handler(req) {
-
-  // Only allow POST
-  if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  // CORS headers — allow your Vercel domain
-  const headers = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
-
-  // Handle preflight
   if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers });
+    return new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' } });
   }
+  if (req.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
+  }
+
+  const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
 
   try {
     const body = await req.json();
     const { question, mode } = body;
 
     if (!question || question.trim().length < 5) {
-      return new Response(
-        JSON.stringify({ error: 'Please provide a more detailed question.' }),
-        { status: 400, headers }
-      );
+      return new Response(JSON.stringify({ error: 'Please provide a more detailed question.' }), { status: 400, headers });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return new Response(
-        JSON.stringify({ error: 'API key not configured.' }),
-        { status: 500, headers }
-      );
+      return new Response(JSON.stringify({ error: 'API key not configured.' }), { status: 500, headers });
     }
 
-    // ── Call Gemini ──────────────────────────────────────────
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
+    let lastError = '';
+    for (const model of MODELS) {
+      try {
+        const geminiRes = await callGemini(apiKey, model, question.trim(), mode || 'Free-form');
 
-    const geminiRes = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [
-          {
-            role: 'user',
-            parts: [
-              { text: SYSTEM_PROMPT },
-              { text: `Analysis mode: ${mode || 'Free-form'}\n\nBusiness question:\n${question}` }
-            ]
-          }
-        ],
-        generationConfig: {
-          temperature: 0.4,
-          maxOutputTokens: 1024,
+        if (!geminiRes.ok) {
+          const errText = await geminiRes.text();
+          lastError = `${model} ${geminiRes.status}: ${errText.slice(0, 100)}`;
+          continue; // try next model
         }
-      })
-    });
 
-    if (!geminiRes.ok) {
-      const errText = await geminiRes.text();
-      console.error('Gemini error:', errText);
-      return new Response(
-        JSON.stringify({ error: `Gemini error ${geminiRes.status}: ${errText.slice(0, 200)}` }),
-        { status: 502, headers }
-      );
+        const data = await geminiRes.json();
+        const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+
+        if (!rawText) {
+          lastError = `${model}: empty response`;
+          continue;
+        }
+
+        const analysis = extractJSON(rawText);
+        return new Response(JSON.stringify({ ok: true, analysis }), { status: 200, headers });
+
+      } catch (e) {
+        lastError = `${model}: ${e.message}`;
+        continue; // try next model
+      }
     }
 
-    const geminiData = await geminiRes.json();
-    const rawText = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-
-    // ── Parse the JSON from Gemini's response ────────────────
-    // Strip any accidental code fences just in case
-    const cleaned = rawText.replace(/```json|```/g, '').trim();
-    let analysis;
-    try {
-      analysis = JSON.parse(cleaned);
-    } catch {
-      console.error('JSON parse failed. Raw text:', rawText);
-      return new Response(
-        JSON.stringify({ error: 'Failed to parse AI response. Please try again.' }),
-        { status: 500, headers }
-      );
-    }
-
-    return new Response(JSON.stringify({ ok: true, analysis }), { status: 200, headers });
+    // All models failed
+    return new Response(JSON.stringify({ error: `All models failed. Last error: ${lastError}` }), { status: 502, headers });
 
   } catch (err) {
-    console.error('Handler error:', err);
-    return new Response(
-      JSON.stringify({ error: 'Unexpected error. Please try again.' }),
-      { status: 500, headers }
-    );
+    return new Response(JSON.stringify({ error: `Server error: ${err.message}` }), { status: 500, headers });
   }
 }
