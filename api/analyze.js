@@ -51,18 +51,23 @@ Respond with ONLY this JSON object, no other text:
   "framework": "Name of analytical framework used"
 }`;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
 
-    const geminiRes = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.3, maxOutputTokens: 1024 }
-      })
-    });
-
-    const responseText = await geminiRes.text();
+    // Retry up to 3 times for 503 (server busy)
+    let geminiRes, responseText;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      geminiRes = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.3, maxOutputTokens: 1024 }
+        })
+      });
+      responseText = await geminiRes.text();
+      if (geminiRes.status !== 503) break;
+      if (attempt < 3) await new Promise(r => setTimeout(r, 1500 * attempt));
+    }
 
     if (!geminiRes.ok) {
       return new Response(
