@@ -111,6 +111,48 @@ body {
   border-radius: 6px; padding: 4px 10px;
 }
 
+/* Starlight cat */
+.cat-panel { position: relative; overflow: hidden; min-height: 380px; }
+.cat-scene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.2 / 1;
+  min-height: 320px;
+  border: 1px solid rgba(0,210,200,0.16);
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(0,210,200,0.18), transparent 32%),
+    radial-gradient(circle at 36% 30%, rgba(255,157,92,0.10), transparent 26%),
+    rgba(0,0,0,0.24);
+  overflow: hidden;
+}
+#catCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.cat-aura {
+  position: absolute;
+  inset: 13% 15%;
+  border-radius: 50%;
+  border: 1px solid rgba(0,210,200,0.18);
+  box-shadow: 0 0 60px rgba(0,210,200,0.16), inset 0 0 45px rgba(159,193,255,0.05);
+  pointer-events: none;
+  transform: rotateX(58deg);
+}
+.cat-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+.cat-caption strong { color: var(--cyan); font-weight: 600; }
+
 /* ── MAIN TWO-COLUMN GRID ───────────────────────────────── */
 .main-grid {
   display: grid;
@@ -331,6 +373,36 @@ body {
 .insight-dot.warn { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
 .insight-dot.info { background: var(--cyan);  box-shadow: 0 0 6px var(--cyan);  }
 .insight-text { font-size: 13.5px; color: var(--ink); }
+.result-block-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  margin: 14px 0 8px;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.recommendation-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.rec-pill {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+.question-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
 
 /* ── FOOTER BAR ──────────────────────────────────────────── */
 .footer-bar {
@@ -368,7 +440,7 @@ body {
   </div>
   <div class="status-pill">
     <span class="status-dot"></span>
-    Phase 1 · Frontend Preview
+    Live analyst workflow
   </div>
 </nav>
 
@@ -515,26 +587,21 @@ body {
           <div class="result-empty">
             <div class="icon">📋</div>
             Run an analysis to see results here.<br>
-            <span style="font-family:var(--mono);font-size:11px;">Key metrics, insights, and charts will appear.</span>
+            <span style="font-family:var(--mono);font-size:11px;">Key metrics, insights, and next-step actions will appear.</span>
           </div>
         </div>
       </div>
 
-      <!-- Chart Placeholder -->
-      <div class="panel">
-        <div class="panel-label">Visualisation</div>
-        <div class="chart-area" id="chartArea">
-          <div class="chart-placeholder">
-            <div class="bar" style="height:35%"></div>
-            <div class="bar" style="height:60%"></div>
-            <div class="bar" style="height:80%"></div>
-            <div class="bar" style="height:55%"></div>
-            <div class="bar" style="height:90%"></div>
-            <div class="bar" style="height:70%"></div>
-            <div class="bar" style="height:45%"></div>
-            <div class="bar" style="height:85%"></div>
-          </div>
-          <div class="chart-label">Chart renders here after analysis · Phase 2 will connect live data</div>
+      <!-- Starlight Companion -->
+      <div class="panel cat-panel">
+        <div class="panel-label">Starlight Companion</div>
+        <div class="cat-scene" id="catScene">
+          <canvas id="catCanvas" aria-label="A dynamic 3D kitten made of starlight particles"></canvas>
+          <div class="cat-aura"></div>
+        </div>
+        <div class="cat-caption">
+          <span><strong>Signal Cat</strong> watches the analysis flow</span>
+          <span id="catMood">idle · listening</span>
         </div>
       </div>
 
@@ -543,8 +610,8 @@ body {
 
   <!-- Footer -->
   <div class="footer-bar">
-    <span>AI Business Analyst Agent · Phase 1 — Static UI</span>
-    <span>Built by <a href="index.html">Hanna Zhao</a> · LLM integration coming in Phase 2</span>
+    <span>AI Business Analyst Agent · Structured analysis workflow</span>
+    <span>Built by <a href="index.html">Hanna Zhao</a> · Gemini-powered API</span>
   </div>
 
 </main>
@@ -575,13 +642,9 @@ function clearAll() {
     <div class="result-empty">
       <div class="icon">📋</div>
       Run an analysis to see results here.<br>
-      <span style="font-family:var(--mono);font-size:11px;">Key metrics, insights, and charts will appear.</span>
+      <span style="font-family:var(--mono);font-size:11px;">Key metrics, insights, and next-step actions will appear.</span>
     </div>`;
-  document.getElementById('chartArea').innerHTML = `
-    <div class="chart-placeholder">
-      ${Array(8).fill(0).map((_,i) => `<div class="bar" style="height:${[35,60,80,55,90,70,45,85][i]}%"></div>`).join('')}
-    </div>
-    <div class="chart-label">Chart renders here after analysis · Phase 2 will connect live data</div>`;
+  setCatMood('idle');
   const chat = document.getElementById('chatWindow');
   chat.innerHTML = `
     <div class="chat-msg agent">
@@ -607,7 +670,7 @@ function resetActivity() {
       <div class="step-icon wait">${s.icon}</div>
       <div class="step-body">
         <div class="step-name">${s.name}</div>
-        <div class="step-detail">${s.name}</div>
+        <div class="step-detail">${i === 0 ? 'Waiting for input' : s.detail.replace('…','')}</div>
       </div>
       <span class="step-badge wait">Idle</span>
     </div>`).join('');
@@ -623,11 +686,21 @@ function setStep(i, state) {
   if (state === 'done')   el.querySelector('.step-detail').textContent = 'Complete';
 }
 
-function addChatMsg(role, html) {
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[ch]));
+}
+
+function addChatMsg(role, html, trusted = false) {
   const chat = document.getElementById('chatWindow');
   const div = document.createElement('div');
   div.className = `chat-msg ${role}`;
-  div.innerHTML = `<div class="msg-avatar">${role === 'agent' ? 'AI' : 'Me'}</div><div class="msg-bubble">${html}</div>`;
+  div.innerHTML = `<div class="msg-avatar">${role === 'agent' ? 'AI' : 'Me'}</div><div class="msg-bubble">${trusted ? html : escapeHtml(html)}</div>`;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
 }
@@ -651,6 +724,7 @@ async function runAnalysis() {
   // UI: start
   addChatMsg('user', q);
   resetActivity();
+  setCatMood('thinking');
   setAnalyzeBtn(true);
 
   // Animate steps while waiting for API
@@ -681,19 +755,22 @@ async function runAnalysis() {
     if (data.mode === 'structured') {
       showResult(data.analysis);
       addChatMsg('agent',
-        `Analysis complete using <strong>${data.analysis.framework || 'Business Analysis'}</strong> framework. ` +
+        `Analysis complete using <strong>${escapeHtml(data.analysis.framework || 'Business Analysis')}</strong> framework. ` +
         `Found <strong>${data.analysis.insights?.length || 0} insights</strong> and ` +
-        `<strong>${data.analysis.recommendations?.length || 0} recommendations</strong>. See the result panel →`
+        `<strong>${data.analysis.recommendations?.length || 0} recommendations</strong>. See the result panel →`,
+        true
       );
     } else {
       showRawResult(data.rawText);
       addChatMsg('agent', 'Analysis complete. See the result panel for the full breakdown →');
     }
+    setCatMood('complete');
 
   } catch (err) {
     stepTimers.forEach(clearTimeout);
     STEPS.forEach((_, i) => setStep(i, 'wait'));
-    addChatMsg('agent', `⚠️ Error: ${err.message}. Please try again.`);
+    addChatMsg('agent', `Error: ${err.message}. Please try again.`);
+    setCatMood('error');
     console.error(err);
   } finally {
     setAnalyzeBtn(false);
@@ -707,21 +784,21 @@ function showResult(a) {
     const color = k.trend === 'up' ? 'var(--green)' : k.trend === 'down' ? 'var(--red)' : 'var(--cyan)';
     const arrow = k.trend === 'up' ? ' ↑' : k.trend === 'down' ? ' ↓' : '';
     return `<div class="kpi-card">
-      <div class="kpi-val" style="color:${color}">${k.value}${arrow}</div>
-      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-val" style="color:${color}">${escapeHtml(k.value)}${arrow}</div>
+      <div class="kpi-label">${escapeHtml(k.label)}</div>
     </div>`;
   }).join('');
 
   // Summary
   const summaryHtml = a.summary
-    ? `<p style="font-size:13.5px;color:var(--muted);margin-bottom:14px;line-height:1.65;">${a.summary}</p>`
+    ? `<p style="font-size:13.5px;color:var(--muted);margin-bottom:14px;line-height:1.65;">${escapeHtml(a.summary)}</p>`
     : '';
 
   // Insights
   const insightHtml = (a.insights || []).map(ins =>
     `<div class="insight-item">
-      <span class="insight-dot ${ins.type}"></span>
-      <span class="insight-text">${ins.text}</span>
+      <span class="insight-dot ${['up','warn','info'].includes(ins.type) ? ins.type : 'info'}"></span>
+      <span class="insight-text">${escapeHtml(ins.text)}</span>
     </div>`
   ).join('');
 
@@ -730,42 +807,38 @@ function showResult(a) {
     const col = r.priority === 'High' ? 'var(--red)' : r.priority === 'Medium' ? 'var(--amber)' : 'var(--green)';
     return `<div class="insight-item" style="flex-direction:column;gap:5px;">
       <div style="display:flex;align-items:center;gap:8px;">
-        <span style="font-family:var(--mono);font-size:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:2px 7px;color:${col}">${r.priority}</span>
-        <span style="font-size:13.5px;font-weight:500;color:var(--ink);">${r.action}</span>
+        <span style="font-family:var(--mono);font-size:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:2px 7px;color:${col}">${escapeHtml(r.priority || 'Medium')}</span>
+        <span style="font-size:13.5px;font-weight:500;color:var(--ink);">${escapeHtml(r.action)}</span>
       </div>
-      <span style="font-size:12.5px;color:var(--muted);padding-left:2px;">→ ${r.impact}</span>
+      <span style="font-size:12.5px;color:var(--muted);padding-left:2px;">→ ${escapeHtml(r.impact)}</span>
+      <div class="recommendation-meta">
+        <span class="rec-pill">Effort: ${escapeHtml(r.effort || 'Medium')}</span>
+        <span class="rec-pill">Owner: ${escapeHtml(r.owner || 'Product/Data')}</span>
+      </div>
     </div>`;
   }).join('');
+
+  const questionHtml = (a.nextQuestions || []).map(q =>
+    `<div>• ${escapeHtml(q)}</div>`
+  ).join('');
 
   document.getElementById('resultArea').innerHTML = `
     <div class="result-section">
       ${summaryHtml}
       <div class="result-kpis">${kpiHtml}</div>
-      <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin:14px 0 8px;letter-spacing:.03em;text-transform:uppercase;">Insights</div>
+      <div class="result-block-title">Insights</div>
       <div class="insight-list">${insightHtml}</div>
-      <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin:14px 0 8px;letter-spacing:.03em;text-transform:uppercase;">Recommendations</div>
+      <div class="result-block-title">Recommendations</div>
       <div class="insight-list">${recHtml}</div>
+      <div class="result-block-title">Next Data Needed</div>
+      <div class="question-list">${questionHtml || '<div>• Add source data or segment breakdowns for a sharper diagnosis.</div>'}</div>
     </div>`;
-
-  // Chart: animate bars based on number of insights
-  const heights = (a.insights || []).map(() => Math.floor(40 + Math.random() * 55));
-  while (heights.length < 6) heights.push(Math.floor(30 + Math.random() * 60));
-  document.getElementById('chartArea').innerHTML = `
-    <div class="chart-placeholder" id="bars">
-      ${heights.slice(0,8).map((h, i) =>
-        `<div class="bar" style="height:0%;max-width:36px;transition:height .55s ease ${i*0.08}s;" data-h="${h}%"></div>`
-      ).join('')}
-    </div>
-    <div class="chart-label">Insight signal distribution · Phase 3 will render real data charts</div>`;
-  setTimeout(() => {
-    document.querySelectorAll('#bars .bar').forEach(b => { b.style.height = b.dataset.h; });
-  }, 80);
 }
 
 /* ── Render raw text result (fallback when JSON not available) ── */
 function showRawResult(text) {
-  // Convert markdown-like headings and bullets to HTML
-  const html = text
+  // Convert escaped markdown-like headings and bullets to simple HTML.
+  const html = escapeHtml(text)
     .replace(/^#{1,3}\s+(.+)$/gm, '<h4 style="color:var(--cyan);font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.05em;margin:16px 0 6px;">$1</h4>')
     .replace(/^\*\*(.+?)\*\*/gm, '<strong>$1</strong>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
@@ -778,20 +851,180 @@ function showRawResult(text) {
     <div class="result-section">
       <div style="font-size:13.5px;color:var(--ink);line-height:1.75;">${html}</div>
     </div>`;
-
-  // Simple animated bars
-  document.getElementById('chartArea').innerHTML = `
-    <div class="chart-placeholder" id="bars">
-      ${[55,70,85,60,90,75,50,80].map((h,i) =>
-        `<div class="bar" style="height:0%;max-width:36px;transition:height .55s ease ${i*0.08}s;" data-h="${h}%"></div>`
-      ).join('')}
-    </div>
-    <div class="chart-label">Insight signal distribution · connect real data in Phase 3</div>`;
-  setTimeout(() => {
-    document.querySelectorAll('#bars .bar').forEach(b => { b.style.height = b.dataset.h; });
-  }, 80);
 }
+
+/* ── Starlight cat: lightweight 3D particle projection ───── */
+const CAT = {
+  particles: [],
+  mood: 'idle',
+  rotation: 0,
+  targetTilt: 0.12,
+  spark: 0
+};
+
+function addEllipsoid(cx, cy, cz, rx, ry, rz, count, color, jitter = 0.04) {
+  for (let i = 0; i < count; i++) {
+    const u = Math.random();
+    const v = Math.random();
+    const theta = Math.PI * 2 * u;
+    const phi = Math.acos(2 * v - 1);
+    const surfaceNoise = 1 + (Math.random() - 0.5) * jitter;
+    CAT.particles.push({
+      x: cx + Math.sin(phi) * Math.cos(theta) * rx * surfaceNoise,
+      y: cy + Math.cos(phi) * ry * surfaceNoise,
+      z: cz + Math.sin(phi) * Math.sin(theta) * rz * surfaceNoise,
+      size: 0.8 + Math.random() * 1.8,
+      color,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function addCone(cx, cy, cz, radius, height, count, color) {
+  for (let i = 0; i < count; i++) {
+    const t = Math.random();
+    const angle = Math.random() * Math.PI * 2;
+    const r = radius * (1 - t) * (0.7 + Math.random() * 0.35);
+    CAT.particles.push({
+      x: cx + Math.cos(angle) * r,
+      y: cy - t * height,
+      z: cz + Math.sin(angle) * r,
+      size: 0.8 + Math.random() * 1.5,
+      color,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function addTail(count) {
+  for (let i = 0; i < count; i++) {
+    const t = i / count;
+    const angle = t * Math.PI * 1.45;
+    const tube = Math.random() * Math.PI * 2;
+    const tubeR = 0.045 + Math.random() * 0.035;
+    CAT.particles.push({
+      x: 0.72 + Math.cos(angle) * 0.36 + Math.cos(tube) * tubeR,
+      y: 0.12 - Math.sin(angle) * 0.46 + Math.sin(tube) * tubeR,
+      z: -0.03 + Math.sin(t * Math.PI) * 0.22,
+      size: 0.9 + Math.random() * 1.7,
+      color: Math.random() > 0.35 ? '#CFE0FF' : '#00D2C8',
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function buildCatParticles() {
+  CAT.particles = [];
+  addEllipsoid(0, 0.12, 0, 0.58, 0.42, 0.36, 460, '#CFE0FF');
+  addEllipsoid(-0.04, -0.42, 0, 0.34, 0.29, 0.29, 280, '#E8EEF8');
+  addCone(-0.28, -0.62, 0, 0.16, 0.34, 90, '#FF9D5C');
+  addCone(0.20, -0.64, 0, 0.16, 0.34, 90, '#FF9D5C');
+  addEllipsoid(-0.16, -0.45, 0.25, 0.035, 0.035, 0.02, 20, '#00D2C8');
+  addEllipsoid(0.10, -0.45, 0.25, 0.035, 0.035, 0.02, 20, '#00D2C8');
+  addEllipsoid(-0.06, -0.36, 0.30, 0.035, 0.025, 0.02, 18, '#FF9D5C');
+  addEllipsoid(-0.28, 0.48, 0.16, 0.12, 0.16, 0.10, 80, '#9FC1FF');
+  addEllipsoid(0.22, 0.49, 0.16, 0.12, 0.16, 0.10, 80, '#9FC1FF');
+  addTail(260);
+}
+
+function setCatMood(mood) {
+  CAT.mood = mood;
+  const label = document.getElementById('catMood');
+  if (!label) return;
+  label.textContent = {
+    idle: 'idle · listening',
+    thinking: 'thinking · tracing signals',
+    complete: 'complete · insight found',
+    error: 'paused · needs retry'
+  }[mood] || 'idle · listening';
+}
+
+function initCatScene() {
+  const canvas = document.getElementById('catCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  buildCatParticles();
+
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+    canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function draw() {
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    ctx.clearRect(0, 0, w, h);
+
+    const speed = CAT.mood === 'thinking' ? 0.016 : CAT.mood === 'complete' ? 0.01 : 0.006;
+    const glow = CAT.mood === 'complete' ? 1.25 : CAT.mood === 'thinking' ? 1.08 : CAT.mood === 'error' ? 0.65 : 0.9;
+    CAT.rotation += speed;
+    CAT.spark += 0.035;
+
+    const cosY = Math.cos(CAT.rotation);
+    const sinY = Math.sin(CAT.rotation);
+    const tilt = CAT.targetTilt + Math.sin(CAT.spark * 0.55) * 0.06;
+    const cosX = Math.cos(tilt);
+    const sinX = Math.sin(tilt);
+    const scale = Math.min(w, h) * 0.34;
+    const cx = w * 0.5;
+    const cy = h * 0.56;
+    const depth = 2.45;
+
+    const projected = CAT.particles.map(p => {
+      const pulse = Math.sin(CAT.spark + p.phase) * 0.025;
+      const px = p.x * (1 + pulse);
+      const py = p.y * (1 + pulse);
+      const pz = p.z * (1 + pulse);
+      const x1 = px * cosY - pz * sinY;
+      const z1 = px * sinY + pz * cosY;
+      const y1 = py * cosX - z1 * sinX;
+      const z2 = py * sinX + z1 * cosX;
+      const perspective = depth / (depth + z2);
+      return {
+        x: cx + x1 * scale * perspective,
+        y: cy + y1 * scale * perspective,
+        z: z2,
+        r: Math.max(0.45, p.size * perspective * glow),
+        color: p.color,
+        alpha: Math.min(1, (0.35 + perspective * 0.45 + Math.sin(CAT.spark * 2 + p.phase) * 0.18) * glow)
+      };
+    }).sort((a, b) => a.z - b.z);
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (const p of projected) {
+      ctx.beginPath();
+      ctx.fillStyle = p.color.replace(')', `, ${p.alpha})`);
+      if (p.color.startsWith('#')) {
+        const hex = p.color.slice(1);
+        const rgb = [
+          parseInt(hex.slice(0, 2), 16),
+          parseInt(hex.slice(2, 4), 16),
+          parseInt(hex.slice(4, 6), 16)
+        ];
+        ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${p.alpha})`;
+      }
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 10 * glow;
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  draw();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initCatScene();
+  setCatMood('idle');
   document.getElementById('queryInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); runAnalysis(); }
   });
