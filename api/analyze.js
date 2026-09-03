@@ -30,9 +30,11 @@ export default async function handler(req) {
 
     const prompt = `You are a senior business analyst. The user asks: "${question.trim()}" (Analysis mode: ${mode || 'Free-form'})
 
-Respond with ONLY this JSON object, no other text:
+Wrap your JSON response between ===START=== and ===END=== markers like this:
+
+===START===
 {
-  "summary": "One sentence summary of the problem and approach.",
+  "summary": "One sentence summary of the problem.",
   "kpis": [
     { "label": "KPI name", "value": "value or % change", "trend": "up" },
     { "label": "KPI name", "value": "value or % change", "trend": "down" },
@@ -40,7 +42,7 @@ Respond with ONLY this JSON object, no other text:
   ],
   "insights": [
     { "type": "warn", "text": "Key finding with specific detail." },
-    { "type": "info", "text": "Context or pattern that explains the finding." },
+    { "type": "info", "text": "Context or pattern." },
     { "type": "up", "text": "Opportunity or positive signal." }
   ],
   "recommendations": [
@@ -49,11 +51,13 @@ Respond with ONLY this JSON object, no other text:
     { "priority": "Medium", "action": "Specific action", "impact": "Expected outcome" }
   ],
   "framework": "Name of analytical framework used"
-}`;
+}
+===END===
+
+trend must be up/down/neutral. type must be up/warn/info. priority must be High/Medium/Low.`;
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
 
-    // Retry up to 3 times for 503 (server busy)
     let geminiRes, responseText;
     for (let attempt = 1; attempt <= 3; attempt++) {
       geminiRes = await fetch(url, {
@@ -61,10 +65,7 @@ Respond with ONLY this JSON object, no other text:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 2048
-          }
+          generationConfig: { temperature: 0.3, maxOutputTokens: 2048 }
         })
       });
       responseText = await geminiRes.text();
@@ -80,22 +81,28 @@ Respond with ONLY this JSON object, no other text:
     }
 
     const data = JSON.parse(responseText);
+
+    // Collect ALL text from all parts (handles thinking models)
     const parts = data?.candidates?.[0]?.content?.parts ?? [];
-    // Thinking models return thought parts + actual response part — we want the non-thought part
-    const rawText = (parts.find(p => !p.thought) ?? parts[0])?.text ?? '';
+    const allText = parts.map(p => p.text || '').join('\n');
 
-    if (!rawText) {
-      return new Response(JSON.stringify({ error: 'Empty response from Gemini.' }), { status: 502, headers });
+    // Extract between ===START=== and ===END=== markers
+    const match = allText.match(/===START===([\s\S]*?)===END===/);
+    if (!match) {
+      // Fallback: try to find { } in the text
+      const start = allText.indexOf('{');
+      const end = allText.lastIndexOf('}');
+      if (start === -1 || end === -1 || end <= start) {
+        return new Response(
+          JSON.stringify({ error: `Could not extract JSON. Raw: ${allText.slice(0, 200)}` }),
+          { status: 502, headers }
+        );
+      }
+      const analysis = JSON.parse(allText.slice(start, end + 1));
+      return new Response(JSON.stringify({ ok: true, analysis }), { status: 200, headers });
     }
 
-    // Extract JSON — find first { and last }
-    const start = rawText.indexOf('{');
-    const end = rawText.lastIndexOf('}');
-    if (start === -1 || end === -1) {
-      return new Response(JSON.stringify({ error: `Could not find JSON in response: ${rawText.slice(0, 200)}` }), { status: 502, headers });
-    }
-    const analysis = JSON.parse(rawText.slice(start, end + 1));
-
+    const analysis = JSON.parse(match[1].trim());
     return new Response(JSON.stringify({ ok: true, analysis }), { status: 200, headers });
 
   } catch (err) {
