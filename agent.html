@@ -678,12 +678,17 @@ async function runAnalysis() {
     // Mark all steps done
     STEPS.forEach((_, i) => setStep(i, 'done'));
 
-    showResult(data.analysis);
-    addChatMsg('agent',
-      `Analysis complete using <strong>${data.analysis.framework || 'Business Analysis'}</strong> framework. ` +
-      `Found <strong>${data.analysis.insights?.length || 0} insights</strong> and ` +
-      `<strong>${data.analysis.recommendations?.length || 0} recommendations</strong>. See the result panel →`
-    );
+    if (data.mode === 'structured') {
+      showResult(data.analysis);
+      addChatMsg('agent',
+        `Analysis complete using <strong>${data.analysis.framework || 'Business Analysis'}</strong> framework. ` +
+        `Found <strong>${data.analysis.insights?.length || 0} insights</strong> and ` +
+        `<strong>${data.analysis.recommendations?.length || 0} recommendations</strong>. See the result panel →`
+      );
+    } else {
+      showRawResult(data.rawText);
+      addChatMsg('agent', 'Analysis complete. See the result panel for the full breakdown →');
+    }
 
   } catch (err) {
     stepTimers.forEach(clearTimeout);
@@ -757,7 +762,35 @@ function showResult(a) {
   }, 80);
 }
 
-/* ── Enter key shortcut ───────────────────────────────────── */
+/* ── Render raw text result (fallback when JSON not available) ── */
+function showRawResult(text) {
+  // Convert markdown-like headings and bullets to HTML
+  const html = text
+    .replace(/^#{1,3}\s+(.+)$/gm, '<h4 style="color:var(--cyan);font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.05em;margin:16px 0 6px;">$1</h4>')
+    .replace(/^\*\*(.+?)\*\*/gm, '<strong>$1</strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^\*\s+(.+)$/gm, '<div class="insight-item" style="margin-bottom:6px;"><span class="insight-dot info"></span><span class="insight-text">$1</span></div>')
+    .replace(/^-\s+(.+)$/gm, '<div class="insight-item" style="margin-bottom:6px;"><span class="insight-dot info"></span><span class="insight-text">$1</span></div>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+
+  document.getElementById('resultArea').innerHTML = `
+    <div class="result-section">
+      <div style="font-size:13.5px;color:var(--ink);line-height:1.75;">${html}</div>
+    </div>`;
+
+  // Simple animated bars
+  document.getElementById('chartArea').innerHTML = `
+    <div class="chart-placeholder" id="bars">
+      ${[55,70,85,60,90,75,50,80].map((h,i) =>
+        `<div class="bar" style="height:0%;max-width:36px;transition:height .55s ease ${i*0.08}s;" data-h="${h}%"></div>`
+      ).join('')}
+    </div>
+    <div class="chart-label">Insight signal distribution · connect real data in Phase 3</div>`;
+  setTimeout(() => {
+    document.querySelectorAll('#bars .bar').forEach(b => { b.style.height = b.dataset.h; });
+  }, 80);
+}
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('queryInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); runAnalysis(); }
