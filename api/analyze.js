@@ -63,8 +63,7 @@ Respond with ONLY this JSON object, no other text:
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
           generationConfig: {
             temperature: 0.3,
-            maxOutputTokens: 2048,
-            thinkingConfig: { thinkingBudget: 0 }
+            maxOutputTokens: 2048
           }
         })
       });
