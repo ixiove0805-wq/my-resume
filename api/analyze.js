@@ -30,31 +30,14 @@ export default async function handler(req) {
 
     const prompt = `You are a senior business analyst. The user asks: "${question.trim()}" (Analysis mode: ${mode || 'Free-form'})
 
-Wrap your JSON response between ===START=== and ===END=== markers like this:
+Please provide a structured business analysis with:
+1. A brief summary of the problem
+2. 3 key KPIs or metrics to track
+3. 3-4 key insights or findings
+4. 3 prioritised recommendations (High/Medium/Low)
+5. The analytical framework you used
 
-===START===
-{
-  "summary": "One sentence summary of the problem.",
-  "kpis": [
-    { "label": "KPI name", "value": "value or % change", "trend": "up" },
-    { "label": "KPI name", "value": "value or % change", "trend": "down" },
-    { "label": "KPI name", "value": "value or % change", "trend": "neutral" }
-  ],
-  "insights": [
-    { "type": "warn", "text": "Key finding with specific detail." },
-    { "type": "info", "text": "Context or pattern." },
-    { "type": "up", "text": "Opportunity or positive signal." }
-  ],
-  "recommendations": [
-    { "priority": "High", "action": "Specific action", "impact": "Expected outcome" },
-    { "priority": "High", "action": "Specific action", "impact": "Expected outcome" },
-    { "priority": "Medium", "action": "Specific action", "impact": "Expected outcome" }
-  ],
-  "framework": "Name of analytical framework used"
-}
-===END===
-
-trend must be up/down/neutral. type must be up/warn/info. priority must be High/Medium/Low.`;
+Be specific and actionable. Use clear headings for each section.`;
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
 
@@ -65,7 +48,7 @@ trend must be up/down/neutral. type must be up/warn/info. priority must be High/
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 2048 }
+          generationConfig: { temperature: 0.4, maxOutputTokens: 2048 }
         })
       });
       responseText = await geminiRes.text();
@@ -80,30 +63,30 @@ trend must be up/down/neutral. type must be up/warn/info. priority must be High/
       );
     }
 
-    const data = JSON.parse(responseText);
+    let data;
+    try { data = JSON.parse(responseText); }
+    catch (e) {
+      return new Response(JSON.stringify({ error: `API response parse failed: ${responseText.slice(0, 200)}` }), { status: 502, headers });
+    }
 
     // Collect ALL text from all parts (handles thinking models)
     const parts = data?.candidates?.[0]?.content?.parts ?? [];
-    const allText = parts.map(p => p.text || '').join('\n');
+    const allText = parts.map(p => p.text || '').join('\n').trim();
 
-    // Extract between ===START=== and ===END=== markers
-    const match = allText.match(/===START===([\s\S]*?)===END===/);
-    if (!match) {
-      // Fallback: try to find { } in the text
-      const start = allText.indexOf('{');
-      const end = allText.lastIndexOf('}');
-      if (start === -1 || end === -1 || end <= start) {
-        return new Response(
-          JSON.stringify({ error: `Could not extract JSON. Raw: ${allText.slice(0, 200)}` }),
-          { status: 502, headers }
-        );
-      }
-      const analysis = JSON.parse(allText.slice(start, end + 1));
-      return new Response(JSON.stringify({ ok: true, analysis }), { status: 200, headers });
+    if (!allText) {
+      return new Response(JSON.stringify({ error: 'Empty response from Gemini.' }), { status: 502, headers });
     }
 
-    const analysis = JSON.parse(match[1].trim());
-    return new Response(JSON.stringify({ ok: true, analysis }), { status: 200, headers });
+    // Try to parse as JSON first
+    try {
+      const match = allText.match(/===START===([\s\S]*?)===END===/);
+      const jsonStr = match ? match[1].trim() : allText.slice(allText.indexOf('{'), allText.lastIndexOf('}') + 1);
+      const analysis = JSON.parse(jsonStr);
+      return new Response(JSON.stringify({ ok: true, mode: 'structured', analysis }), { status: 200, headers });
+    } catch (_) {
+      // JSON failed — return raw text, let the frontend display it nicely
+      return new Response(JSON.stringify({ ok: true, mode: 'text', rawText: allText }), { status: 200, headers });
+    }
 
   } catch (err) {
     return new Response(JSON.stringify({ error: `Server error: ${err.message}` }), { status: 500, headers });
