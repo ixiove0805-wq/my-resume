@@ -28,7 +28,7 @@ export default async function handler(req) {
       return new Response(JSON.stringify({ error: 'API key not configured.' }), { status: 500, headers });
     }
 
-    const prompt = `You are a senior business analyst. The user asks: "${question.trim()}" (Analysis mode: ${mode || 'Free-form'})
+    const prompt = `You are a senior business analyst. The user asks: "${question.trim()}"
 
 Please provide a structured business analysis with:
 1. A brief summary of the problem
