@@ -61,7 +61,11 @@ Respond with ONLY this JSON object, no other text:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 2048 }
+          generationConfig: {
+            temperature: 0.3,
+            maxOutputTokens: 2048,
+            thinkingConfig: { thinkingBudget: 0 }
+          }
         })
       });
       responseText = await geminiRes.text();
@@ -77,7 +81,9 @@ Respond with ONLY this JSON object, no other text:
     }
 
     const data = JSON.parse(responseText);
-    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    const parts = data?.candidates?.[0]?.content?.parts ?? [];
+    // Thinking models return thought parts + actual response part — we want the non-thought part
+    const rawText = (parts.find(p => !p.thought) ?? parts[0])?.text ?? '';
 
     if (!rawText) {
       return new Response(JSON.stringify({ error: 'Empty response from Gemini.' }), { status: 502, headers });
